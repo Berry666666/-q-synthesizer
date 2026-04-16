@@ -1,0 +1,1542 @@
+{
+  "id": "Q-expert-8b9949bf5c",
+  "created_at": "2026-04-16T03:08:22.216629Z",
+  "profile": "expert",
+  "domain": "医疗数据平台上线与审计",
+  "Q": "你是智桥健康的总负责人。\n\n【背景】\n在智桥健康的本季度重点目标中，AI辅助诊断流程上线被列为最高优先级，要求同时达到可用性和合规性双指标。\n\n【核心目标】\n在高监管约束下输出可落地实施路径，并保证关键节点可验收。\n\n【当前资源与环境】\n- 团队规模: 5人\n- 时间窗口: 4周\n- 可用预算上限: 708k\n- 可调用工具: 质量抽检脚本, 告警与值班系统, 电子病历接口, 试验入组数据库, 模型评估平台, 权限管理系统, 法规条款知识库, 审计日志中心, 伦理审查工单, 数据脱敏服务\n\n【任务要求（复杂子目标）】\n- SG-01. 优化资源配置（AI辅助诊断流程上线）\n- SG-02. 建立回滚方案（AI辅助诊断流程上线）\n- SG-03. 安排灰度验证（AI辅助诊断流程上线）\n- SG-04. 统一数据口径（AI辅助诊断流程上线）\n- SG-05. 统一数据口径（AI辅助诊断流程上线）\n- SG-06. 完成交付复盘（AI辅助诊断流程上线）\n- SG-07. 建立回滚方案（AI辅助诊断流程上线）\n- SG-08. 统一数据口径（AI辅助诊断流程上线）\n- SG-09. 制定执行策略（AI辅助诊断流程上线）\n- SG-10. 识别关键风险（AI辅助诊断流程上线）\n- ... 其余7个子任务需要你自行统筹与编排。\n\n【硬约束（必须满足）】\n- 关键流程不可依赖单点人员。\n- 上线窗口不可推迟超过一周。\n- 任何患者敏感信息不得出现在明文日志中。\n- 必须满足监管抽检可复现要求。\n- 必须保留至少一种人工兜底路径。\n- 每次模型更新必须有可追溯审批记录。\n- 跨团队阻塞问题必须在24小时内升级处理。\n- 关键路径任务不得连续延期超过2次。\n- 至少2个关键节点需要双人复核。\n- 所有高风险任务必须预留至少19%缓冲时间。\n- 高优先级告警确认时延不得超过27分钟。\n- 关键里程碑评审必须覆盖不少于6类风险维度。\n- 每周必须完成不少于5次阶段性质量抽检。\n- 每个阶段至少保留2个可替代执行方案。\n- 资源调度冲突在同一工作日内必须闭环处理。\n- 对外依赖接口故障恢复时间不得超过74分钟。\n- 附加硬约束-1: 不得弱化主目标验收标准。\n- 附加硬约束-2: 不得弱化主目标验收标准。\n- 总预算上限为708k，超出必须给出明确削减路径。\n- 项目总工期不超过4周。\n- 每周最多并行6个高风险任务。\n- 核心里程碑最迟在第2周完成。\n\n【软偏好（尽量满足）】\n- 优先采用模块化设计以支持后续扩展。\n- 尽量降低跨院区协作摩擦成本。\n- 优先减少人工重复录入环节。\n\n【动态变化事件】\n- EV-01（在第2阶段触发，影响等级:low）: 监管部门临时追加一项审计字段要求。\n- EV-02（在第7阶段触发，影响等级:high）: 模型离线评估出现分布漂移告警。\n- EV-03（在第7阶段触发，影响等级:medium）: 其中一个中心站点数据上传延迟48小时。\n- EV-04（在第5阶段触发，影响等级:low）: 关键第三方服务出现间歇性超时。\n\n【输出要求】\n- 提供最小化上线版本与迭代路线。\n- 定义核心风险阈值与观测面板。\n- 输出阶段目标、完成定义和证据清单。\n- 给出数据治理与权限控制策略。\n- 需要给出分阶段长程规划、依赖关系、关键里程碑、资源分配、风险处置与回滚方案。\n- 请说明在突发事件触发后如何重排优先级，且保证目标不失控。\n\n【补充上下文（可能包含噪声信息，请自行判断相关性）】\n- 品牌部希望优化官网字体层级。\n- 后勤团队在讨论会议室预订规则。\n- 近期有人建议统一团队工牌配色。",
+  "quality": {
+    "score": 0.91,
+    "components": {
+      "subgoal_complexity": 1.0,
+      "dependency_depth": 0.625,
+      "constraint_density": 1.0,
+      "dynamic_events": 1.0,
+      "tool_diversity": 1.0
+    },
+    "feasibility": {
+      "total_hours": 420,
+      "total_budget_k": 131,
+      "capacity_hours": 480,
+      "budget_limit_k": 708,
+      "feasible_hours": true,
+      "feasible_budget": true
+    },
+    "graph_depth": 5
+  },
+  "context": {
+    "background": "在智桥健康的本季度重点目标中，AI辅助诊断流程上线被列为最高优先级，要求同时达到可用性和合规性双指标。",
+    "goal": "在高监管约束下输出可落地实施路径，并保证关键节点可验收。",
+    "hard_constraints": [
+      "关键流程不可依赖单点人员。",
+      "上线窗口不可推迟超过一周。",
+      "任何患者敏感信息不得出现在明文日志中。",
+      "必须满足监管抽检可复现要求。",
+      "必须保留至少一种人工兜底路径。",
+      "每次模型更新必须有可追溯审批记录。",
+      "跨团队阻塞问题必须在24小时内升级处理。",
+      "关键路径任务不得连续延期超过2次。",
+      "至少2个关键节点需要双人复核。",
+      "所有高风险任务必须预留至少19%缓冲时间。",
+      "高优先级告警确认时延不得超过27分钟。",
+      "关键里程碑评审必须覆盖不少于6类风险维度。",
+      "每周必须完成不少于5次阶段性质量抽检。",
+      "每个阶段至少保留2个可替代执行方案。",
+      "资源调度冲突在同一工作日内必须闭环处理。",
+      "对外依赖接口故障恢复时间不得超过74分钟。",
+      "附加硬约束-1: 不得弱化主目标验收标准。",
+      "附加硬约束-2: 不得弱化主目标验收标准。",
+      "总预算上限为708k，超出必须给出明确削减路径。",
+      "项目总工期不超过4周。",
+      "每周最多并行6个高风险任务。",
+      "核心里程碑最迟在第2周完成。"
+    ],
+    "soft_preferences": [
+      "优先采用模块化设计以支持后续扩展。",
+      "尽量降低跨院区协作摩擦成本。",
+      "优先减少人工重复录入环节。"
+    ],
+    "dynamic_events": [
+      {
+        "id": "EV-01",
+        "trigger_phase": 2,
+        "description": "监管部门临时追加一项审计字段要求。",
+        "impact_level": "low",
+        "required_action": "触发应急分支：重排优先级、收缩范围、并保留合规与回滚能力。"
+      },
+      {
+        "id": "EV-02",
+        "trigger_phase": 7,
+        "description": "模型离线评估出现分布漂移告警。",
+        "impact_level": "high",
+        "required_action": "触发应急分支：重排优先级、收缩范围、并保留合规与回滚能力。"
+      },
+      {
+        "id": "EV-03",
+        "trigger_phase": 7,
+        "description": "其中一个中心站点数据上传延迟48小时。",
+        "impact_level": "medium",
+        "required_action": "触发应急分支：重排优先级、收缩范围、并保留合规与回滚能力。"
+      },
+      {
+        "id": "EV-04",
+        "trigger_phase": 5,
+        "description": "关键第三方服务出现间歇性超时。",
+        "impact_level": "low",
+        "required_action": "触发应急分支：重排优先级、收缩范围、并保留合规与回滚能力。"
+      }
+    ],
+    "deliverables": [
+      "提供最小化上线版本与迭代路线。",
+      "定义核心风险阈值与观测面板。",
+      "输出阶段目标、完成定义和证据清单。",
+      "给出数据治理与权限控制策略。"
+    ],
+    "noise_context": [
+      "品牌部希望优化官网字体层级。",
+      "后勤团队在讨论会议室预订规则。",
+      "近期有人建议统一团队工牌配色。"
+    ],
+    "available_tools": [
+      "质量抽检脚本",
+      "告警与值班系统",
+      "电子病历接口",
+      "试验入组数据库",
+      "模型评估平台",
+      "权限管理系统",
+      "法规条款知识库",
+      "审计日志中心",
+      "伦理审查工单",
+      "数据脱敏服务"
+    ]
+  },
+  "meta": {
+    "org": "智桥健康",
+    "focus": "AI辅助诊断流程上线",
+    "team_size": 5,
+    "timeline_weeks": 4,
+    "budget_k": 708,
+    "parallel_limit": 6,
+    "subgoal_count": 17,
+    "constraint_count": 22,
+    "event_count": 4,
+    "tool_count": 10
+  },
+  "task_graph": {
+    "nodes": [
+      {
+        "id": "SG-01",
+        "title": "优化资源配置（AI辅助诊断流程上线）",
+        "objective": "在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。",
+        "dependencies": [],
+        "required_tools": [
+          "数据脱敏服务",
+          "告警与值班系统",
+          "权限管理系统"
+        ],
+        "estimated_hours": 39,
+        "estimated_budget_k": 11,
+        "layer": 4
+      },
+      {
+        "id": "SG-02",
+        "title": "建立回滚方案（AI辅助诊断流程上线）",
+        "objective": "在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。",
+        "dependencies": [],
+        "required_tools": [
+          "电子病历接口",
+          "告警与值班系统"
+        ],
+        "estimated_hours": 24,
+        "estimated_budget_k": 6,
+        "layer": 0
+      },
+      {
+        "id": "SG-03",
+        "title": "安排灰度验证（AI辅助诊断流程上线）",
+        "objective": "在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。",
+        "dependencies": [
+          "SG-01"
+        ],
+        "required_tools": [
+          "权限管理系统"
+        ],
+        "estimated_hours": 26,
+        "estimated_budget_k": 4,
+        "layer": 6
+      },
+      {
+        "id": "SG-04",
+        "title": "统一数据口径（AI辅助诊断流程上线）",
+        "objective": "在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。",
+        "dependencies": [
+          "SG-02"
+        ],
+        "required_tools": [
+          "数据脱敏服务"
+        ],
+        "estimated_hours": 20,
+        "estimated_budget_k": 7,
+        "layer": 2
+      },
+      {
+        "id": "SG-05",
+        "title": "统一数据口径（AI辅助诊断流程上线）",
+        "objective": "在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。",
+        "dependencies": [
+          "SG-02",
+          "SG-04"
+        ],
+        "required_tools": [
+          "伦理审查工单"
+        ],
+        "estimated_hours": 32,
+        "estimated_budget_k": 11,
+        "layer": 3
+      },
+      {
+        "id": "SG-06",
+        "title": "完成交付复盘（AI辅助诊断流程上线）",
+        "objective": "在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。",
+        "dependencies": [
+          "SG-04"
+        ],
+        "required_tools": [
+          "电子病历接口",
+          "权限管理系统"
+        ],
+        "estimated_hours": 13,
+        "estimated_budget_k": 14,
+        "layer": 3
+      },
+      {
+        "id": "SG-07",
+        "title": "建立回滚方案（AI辅助诊断流程上线）",
+        "objective": "在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。",
+        "dependencies": [
+          "SG-02",
+          "SG-05",
+          "SG-04"
+        ],
+        "required_tools": [
+          "质量抽检脚本"
+        ],
+        "estimated_hours": 15,
+        "estimated_budget_k": 8,
+        "layer": 5
+      },
+      {
+        "id": "SG-08",
+        "title": "统一数据口径（AI辅助诊断流程上线）",
+        "objective": "在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。",
+        "dependencies": [
+          "SG-05"
+        ],
+        "required_tools": [
+          "电子病历接口",
+          "数据脱敏服务"
+        ],
+        "estimated_hours": 8,
+        "estimated_budget_k": 3,
+        "layer": 4
+      },
+      {
+        "id": "SG-09",
+        "title": "制定执行策略（AI辅助诊断流程上线）",
+        "objective": "在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。",
+        "dependencies": [
+          "SG-04",
+          "SG-01",
+          "SG-05"
+        ],
+        "required_tools": [
+          "电子病历接口",
+          "数据脱敏服务"
+        ],
+        "estimated_hours": 29,
+        "estimated_budget_k": 7,
+        "layer": 5
+      },
+      {
+        "id": "SG-10",
+        "title": "识别关键风险（AI辅助诊断流程上线）",
+        "objective": "在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。",
+        "dependencies": [],
+        "required_tools": [
+          "质量抽检脚本",
+          "伦理审查工单",
+          "电子病历接口"
+        ],
+        "estimated_hours": 23,
+        "estimated_budget_k": 7,
+        "layer": 0
+      },
+      {
+        "id": "SG-11",
+        "title": "统一数据口径（AI辅助诊断流程上线）",
+        "objective": "在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。",
+        "dependencies": [],
+        "required_tools": [
+          "权限管理系统",
+          "法规条款知识库"
+        ],
+        "estimated_hours": 8,
+        "estimated_budget_k": 10,
+        "layer": 0
+      },
+      {
+        "id": "SG-12",
+        "title": "推进跨团队协作（AI辅助诊断流程上线）",
+        "objective": "在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。",
+        "dependencies": [
+          "SG-02",
+          "SG-11"
+        ],
+        "required_tools": [
+          "权限管理系统"
+        ],
+        "estimated_hours": 36,
+        "estimated_budget_k": 6,
+        "layer": 2
+      },
+      {
+        "id": "SG-13",
+        "title": "识别关键风险（AI辅助诊断流程上线）",
+        "objective": "在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。",
+        "dependencies": [
+          "SG-11"
+        ],
+        "required_tools": [
+          "电子病历接口"
+        ],
+        "estimated_hours": 35,
+        "estimated_budget_k": 13,
+        "layer": 3
+      },
+      {
+        "id": "SG-14",
+        "title": "梳理现状基线（AI辅助诊断流程上线）",
+        "objective": "在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。",
+        "dependencies": [
+          "SG-11",
+          "SG-07",
+          "SG-12"
+        ],
+        "required_tools": [
+          "模型评估平台",
+          "伦理审查工单"
+        ],
+        "estimated_hours": 26,
+        "estimated_budget_k": 5,
+        "layer": 6
+      },
+      {
+        "id": "SG-15",
+        "title": "梳理现状基线（AI辅助诊断流程上线）",
+        "objective": "在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。",
+        "dependencies": [
+          "SG-02"
+        ],
+        "required_tools": [
+          "模型评估平台",
+          "电子病历接口"
+        ],
+        "estimated_hours": 16,
+        "estimated_budget_k": 12,
+        "layer": 1
+      },
+      {
+        "id": "SG-16",
+        "title": "执行压力测试（AI辅助诊断流程上线）",
+        "objective": "在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。",
+        "dependencies": [
+          "SG-15"
+        ],
+        "required_tools": [
+          "试验入组数据库",
+          "质量抽检脚本"
+        ],
+        "estimated_hours": 40,
+        "estimated_budget_k": 4,
+        "layer": 5
+      },
+      {
+        "id": "SG-17",
+        "title": "推进跨团队协作（AI辅助诊断流程上线）",
+        "objective": "在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。",
+        "dependencies": [
+          "SG-06",
+          "SG-11",
+          "SG-10"
+        ],
+        "required_tools": [
+          "电子病历接口",
+          "伦理审查工单"
+        ],
+        "estimated_hours": 30,
+        "estimated_budget_k": 3,
+        "layer": 5
+      }
+    ],
+    "edges": [
+      {
+        "from": "SG-01",
+        "to": "SG-03"
+      },
+      {
+        "from": "SG-02",
+        "to": "SG-04"
+      },
+      {
+        "from": "SG-02",
+        "to": "SG-05"
+      },
+      {
+        "from": "SG-04",
+        "to": "SG-05"
+      },
+      {
+        "from": "SG-04",
+        "to": "SG-06"
+      },
+      {
+        "from": "SG-02",
+        "to": "SG-07"
+      },
+      {
+        "from": "SG-05",
+        "to": "SG-07"
+      },
+      {
+        "from": "SG-04",
+        "to": "SG-07"
+      },
+      {
+        "from": "SG-05",
+        "to": "SG-08"
+      },
+      {
+        "from": "SG-04",
+        "to": "SG-09"
+      },
+      {
+        "from": "SG-01",
+        "to": "SG-09"
+      },
+      {
+        "from": "SG-05",
+        "to": "SG-09"
+      },
+      {
+        "from": "SG-02",
+        "to": "SG-12"
+      },
+      {
+        "from": "SG-11",
+        "to": "SG-12"
+      },
+      {
+        "from": "SG-11",
+        "to": "SG-13"
+      },
+      {
+        "from": "SG-11",
+        "to": "SG-14"
+      },
+      {
+        "from": "SG-07",
+        "to": "SG-14"
+      },
+      {
+        "from": "SG-12",
+        "to": "SG-14"
+      },
+      {
+        "from": "SG-02",
+        "to": "SG-15"
+      },
+      {
+        "from": "SG-15",
+        "to": "SG-16"
+      },
+      {
+        "from": "SG-06",
+        "to": "SG-17"
+      },
+      {
+        "from": "SG-11",
+        "to": "SG-17"
+      },
+      {
+        "from": "SG-10",
+        "to": "SG-17"
+      }
+    ]
+  },
+  "A": "一、总体策略\n先统一口径与关键依赖，再分阶段推进执行；每个阶段设置可观测指标、风险门禁与回滚条件。\n\n二、分阶段执行计划\n阶段1（目标: 收敛关键不确定性并推进里程碑）\n- SG-02 建立回滚方案（AI辅助诊断流程上线）: 依赖[无]；动作= 在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。；工具= 电子病历接口, 告警与值班系统；预估工时=24h；预算=6k\n- SG-10 识别关键风险（AI辅助诊断流程上线）: 依赖[无]；动作= 在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。；工具= 质量抽检脚本, 伦理审查工单, 电子病历接口；预估工时=23h；预算=7k\n- SG-11 统一数据口径（AI辅助诊断流程上线）: 依赖[无]；动作= 在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。；工具= 权限管理系统, 法规条款知识库；预估工时=8h；预算=10k\n\n阶段2（目标: 收敛关键不确定性并推进里程碑）\n- SG-15 梳理现状基线（AI辅助诊断流程上线）: 依赖[SG-02]；动作= 在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。；工具= 模型评估平台, 电子病历接口；预估工时=16h；预算=12k\n\n阶段3（目标: 收敛关键不确定性并推进里程碑）\n- SG-04 统一数据口径（AI辅助诊断流程上线）: 依赖[SG-02]；动作= 在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。；工具= 数据脱敏服务；预估工时=20h；预算=7k\n- SG-12 推进跨团队协作（AI辅助诊断流程上线）: 依赖[SG-02, SG-11]；动作= 在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。；工具= 权限管理系统；预估工时=36h；预算=6k\n\n阶段4（目标: 收敛关键不确定性并推进里程碑）\n- SG-05 统一数据口径（AI辅助诊断流程上线）: 依赖[SG-02, SG-04]；动作= 在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。；工具= 伦理审查工单；预估工时=32h；预算=11k\n- SG-06 完成交付复盘（AI辅助诊断流程上线）: 依赖[SG-04]；动作= 在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。；工具= 电子病历接口, 权限管理系统；预估工时=13h；预算=14k\n- SG-13 识别关键风险（AI辅助诊断流程上线）: 依赖[SG-11]；动作= 在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。；工具= 电子病历接口；预估工时=35h；预算=13k\n\n阶段5（目标: 收敛关键不确定性并推进里程碑）\n- SG-01 优化资源配置（AI辅助诊断流程上线）: 依赖[无]；动作= 在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。；工具= 数据脱敏服务, 告警与值班系统, 权限管理系统；预估工时=39h；预算=11k\n- SG-08 统一数据口径（AI辅助诊断流程上线）: 依赖[SG-05]；动作= 在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。；工具= 电子病历接口, 数据脱敏服务；预估工时=8h；预算=3k\n\n阶段6（目标: 收敛关键不确定性并推进里程碑）\n- SG-07 建立回滚方案（AI辅助诊断流程上线）: 依赖[SG-02, SG-05, SG-04]；动作= 在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。；工具= 质量抽检脚本；预估工时=15h；预算=8k\n- SG-09 制定执行策略（AI辅助诊断流程上线）: 依赖[SG-04, SG-01, SG-05]；动作= 在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。；工具= 电子病历接口, 数据脱敏服务；预估工时=29h；预算=7k\n- SG-16 执行压力测试（AI辅助诊断流程上线）: 依赖[SG-15]；动作= 在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。；工具= 试验入组数据库, 质量抽检脚本；预估工时=40h；预算=4k\n- SG-17 推进跨团队协作（AI辅助诊断流程上线）: 依赖[SG-06, SG-11, SG-10]；动作= 在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。；工具= 电子病历接口, 伦理审查工单；预估工时=30h；预算=3k\n\n阶段7（目标: 收敛关键不确定性并推进里程碑）\n- SG-03 安排灰度验证（AI辅助诊断流程上线）: 依赖[SG-01]；动作= 在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。；工具= 权限管理系统；预估工时=26h；预算=4k\n- SG-14 梳理现状基线（AI辅助诊断流程上线）: 依赖[SG-11, SG-07, SG-12]；动作= 在受限资源下完成“AI辅助诊断流程上线”相关关键动作，形成可验收结果。；工具= 模型评估平台, 伦理审查工单；预估工时=26h；预算=5k\n\n三、动态事件应对\n- EV-01: 当第2阶段触发“监管部门临时追加一项审计字段要求。”时，执行动作: 触发应急分支：重排优先级、收缩范围、并保留合规与回滚能力。\n- EV-02: 当第7阶段触发“模型离线评估出现分布漂移告警。”时，执行动作: 触发应急分支：重排优先级、收缩范围、并保留合规与回滚能力。\n- EV-03: 当第7阶段触发“其中一个中心站点数据上传延迟48小时。”时，执行动作: 触发应急分支：重排优先级、收缩范围、并保留合规与回滚能力。\n- EV-04: 当第5阶段触发“关键第三方服务出现间歇性超时。”时，执行动作: 触发应急分支：重排优先级、收缩范围、并保留合规与回滚能力。\n\n四、治理与验收\n- 每阶段输出里程碑结果、风险状态、预算消耗与下一阶段准入判断。\n- 若出现关键约束冲突，优先保护合规与可回滚能力，再做范围裁剪。",
+  "industry": "医疗数据平台上线与审计",
+  "trajectory": {
+    "schema": "long_horizon_trajectory_v2",
+    "pipeline_version": "trajectory_pipeline_v2",
+    "long_range_plan": [
+      {
+        "phase_id": "P01",
+        "phase_goal": "推进第1阶段里程碑，收敛关键不确定性并保障约束满足。",
+        "weeks": [
+          1,
+          1
+        ],
+        "subgoal_ids": [
+          "SG-02",
+          "SG-10",
+          "SG-11"
+        ],
+        "key_tools": [
+          "电子病历接口",
+          "告警与值班系统",
+          "质量抽检脚本",
+          "伦理审查工单",
+          "权限管理系统",
+          "法规条款知识库"
+        ],
+        "milestones": [
+          "建立回滚方案（AI辅助诊断流程上线）",
+          "识别关键风险（AI辅助诊断流程上线）",
+          "统一数据口径（AI辅助诊断流程上线）"
+        ],
+        "risk_signal": "关键路径延迟累计",
+        "entry_criteria": "上阶段关键依赖满足，资源与权限完成校验。",
+        "exit_criteria": "阶段里程碑完成且风险状态可控，允许进入下一阶段。"
+      },
+      {
+        "phase_id": "P02",
+        "phase_goal": "推进第2阶段里程碑，收敛关键不确定性并保障约束满足。",
+        "weeks": [
+          2,
+          2
+        ],
+        "subgoal_ids": [
+          "SG-15"
+        ],
+        "key_tools": [
+          "模型评估平台",
+          "电子病历接口"
+        ],
+        "milestones": [
+          "梳理现状基线（AI辅助诊断流程上线）"
+        ],
+        "risk_signal": "预算消耗偏离阈值",
+        "entry_criteria": "上阶段关键依赖满足，资源与权限完成校验。",
+        "exit_criteria": "阶段里程碑完成且风险状态可控，允许进入下一阶段。"
+      },
+      {
+        "phase_id": "P03",
+        "phase_goal": "推进第3阶段里程碑，收敛关键不确定性并保障约束满足。",
+        "weeks": [
+          3,
+          3
+        ],
+        "subgoal_ids": [
+          "SG-04",
+          "SG-12"
+        ],
+        "key_tools": [
+          "数据脱敏服务",
+          "权限管理系统"
+        ],
+        "milestones": [
+          "统一数据口径（AI辅助诊断流程上线）",
+          "推进跨团队协作（AI辅助诊断流程上线）"
+        ],
+        "risk_signal": "预算消耗偏离阈值",
+        "entry_criteria": "上阶段关键依赖满足，资源与权限完成校验。",
+        "exit_criteria": "阶段里程碑完成且风险状态可控，允许进入下一阶段。"
+      },
+      {
+        "phase_id": "P04",
+        "phase_goal": "推进第4阶段里程碑，收敛关键不确定性并保障约束满足。",
+        "weeks": [
+          4,
+          4
+        ],
+        "subgoal_ids": [
+          "SG-05",
+          "SG-06",
+          "SG-13"
+        ],
+        "key_tools": [
+          "伦理审查工单",
+          "电子病历接口",
+          "权限管理系统"
+        ],
+        "milestones": [
+          "统一数据口径（AI辅助诊断流程上线）",
+          "完成交付复盘（AI辅助诊断流程上线）",
+          "识别关键风险（AI辅助诊断流程上线）"
+        ],
+        "risk_signal": "预算消耗偏离阈值",
+        "entry_criteria": "上阶段关键依赖满足，资源与权限完成校验。",
+        "exit_criteria": "阶段里程碑完成且风险状态可控，允许进入下一阶段。"
+      },
+      {
+        "phase_id": "P05",
+        "phase_goal": "推进第5阶段里程碑，收敛关键不确定性并保障约束满足。",
+        "weeks": [
+          5,
+          4
+        ],
+        "subgoal_ids": [
+          "SG-01",
+          "SG-08"
+        ],
+        "key_tools": [
+          "数据脱敏服务",
+          "告警与值班系统",
+          "权限管理系统",
+          "电子病历接口"
+        ],
+        "milestones": [
+          "优化资源配置（AI辅助诊断流程上线）",
+          "统一数据口径（AI辅助诊断流程上线）"
+        ],
+        "risk_signal": "关键路径延迟累计",
+        "entry_criteria": "上阶段关键依赖满足，资源与权限完成校验。",
+        "exit_criteria": "阶段里程碑完成且风险状态可控，允许进入下一阶段。"
+      },
+      {
+        "phase_id": "P06",
+        "phase_goal": "推进第6阶段里程碑，收敛关键不确定性并保障约束满足。",
+        "weeks": [
+          6,
+          4
+        ],
+        "subgoal_ids": [
+          "SG-07",
+          "SG-09",
+          "SG-16",
+          "SG-17"
+        ],
+        "key_tools": [
+          "质量抽检脚本",
+          "电子病历接口",
+          "数据脱敏服务",
+          "试验入组数据库",
+          "伦理审查工单"
+        ],
+        "milestones": [
+          "建立回滚方案（AI辅助诊断流程上线）",
+          "制定执行策略（AI辅助诊断流程上线）",
+          "执行压力测试（AI辅助诊断流程上线）"
+        ],
+        "risk_signal": "跨团队依赖阻塞",
+        "entry_criteria": "上阶段关键依赖满足，资源与权限完成校验。",
+        "exit_criteria": "阶段里程碑完成且风险状态可控，允许进入下一阶段。"
+      },
+      {
+        "phase_id": "P07",
+        "phase_goal": "推进第7阶段里程碑，收敛关键不确定性并保障约束满足。",
+        "weeks": [
+          7,
+          4
+        ],
+        "subgoal_ids": [
+          "SG-03",
+          "SG-14"
+        ],
+        "key_tools": [
+          "权限管理系统",
+          "模型评估平台",
+          "伦理审查工单"
+        ],
+        "milestones": [
+          "安排灰度验证（AI辅助诊断流程上线）",
+          "梳理现状基线（AI辅助诊断流程上线）"
+        ],
+        "risk_signal": "预算消耗偏离阈值",
+        "entry_criteria": "上阶段关键依赖满足，资源与权限完成校验。",
+        "exit_criteria": "阶段里程碑完成且风险状态可控，允许进入下一阶段。"
+      }
+    ],
+    "tool_execution": [
+      {
+        "step_id": "TX-001",
+        "phase_id": "P01",
+        "subgoal_id": "SG-02",
+        "tool": "电子病历接口",
+        "intent": "建立回滚方案（AI辅助诊断流程上线）",
+        "action": "调用电子病历接口完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-002",
+        "phase_id": "P01",
+        "subgoal_id": "SG-02",
+        "tool": "告警与值班系统",
+        "intent": "建立回滚方案（AI辅助诊断流程上线）",
+        "action": "调用告警与值班系统完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "结果部分达标，仍有关键约束未完全满足。",
+        "status": "partial",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-003",
+        "phase_id": "P01",
+        "subgoal_id": "SG-02",
+        "tool": "质量抽检脚本",
+        "intent": "修复建立回滚方案（AI辅助诊断流程上线）中的偏差",
+        "action": "通过质量抽检脚本补充校验并闭环问题。",
+        "expected_signal": "偏差收敛，风险回到阈值内。",
+        "observed_signal": "补救动作完成，阶段状态恢复。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "fix_plan",
+          "verification_result"
+        ]
+      },
+      {
+        "step_id": "TX-004",
+        "phase_id": "P01",
+        "subgoal_id": "SG-10",
+        "tool": "质量抽检脚本",
+        "intent": "识别关键风险（AI辅助诊断流程上线）",
+        "action": "调用质量抽检脚本完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "执行过程触发异常，已通过备选路径恢复。",
+        "status": "recovered",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-005",
+        "phase_id": "P01",
+        "subgoal_id": "SG-10",
+        "tool": "伦理审查工单",
+        "intent": "识别关键风险（AI辅助诊断流程上线）",
+        "action": "调用伦理审查工单完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-006",
+        "phase_id": "P01",
+        "subgoal_id": "SG-11",
+        "tool": "权限管理系统",
+        "intent": "统一数据口径（AI辅助诊断流程上线）",
+        "action": "调用权限管理系统完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-007",
+        "phase_id": "P01",
+        "subgoal_id": "SG-11",
+        "tool": "法规条款知识库",
+        "intent": "统一数据口径（AI辅助诊断流程上线）",
+        "action": "调用法规条款知识库完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-008",
+        "phase_id": "P02",
+        "subgoal_id": "SG-15",
+        "tool": "模型评估平台",
+        "intent": "梳理现状基线（AI辅助诊断流程上线）",
+        "action": "调用模型评估平台完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "结果部分达标，仍有关键约束未完全满足。",
+        "status": "partial",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-009",
+        "phase_id": "P02",
+        "subgoal_id": "SG-15",
+        "tool": "质量抽检脚本",
+        "intent": "修复梳理现状基线（AI辅助诊断流程上线）中的偏差",
+        "action": "通过质量抽检脚本补充校验并闭环问题。",
+        "expected_signal": "偏差收敛，风险回到阈值内。",
+        "observed_signal": "补救动作完成，阶段状态恢复。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "fix_plan",
+          "verification_result"
+        ]
+      },
+      {
+        "step_id": "TX-010",
+        "phase_id": "P02",
+        "subgoal_id": "SG-15",
+        "tool": "电子病历接口",
+        "intent": "梳理现状基线（AI辅助诊断流程上线）",
+        "action": "调用电子病历接口完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-011",
+        "phase_id": "P03",
+        "subgoal_id": "SG-04",
+        "tool": "数据脱敏服务",
+        "intent": "统一数据口径（AI辅助诊断流程上线）",
+        "action": "调用数据脱敏服务完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "结果部分达标，仍有关键约束未完全满足。",
+        "status": "partial",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-012",
+        "phase_id": "P03",
+        "subgoal_id": "SG-04",
+        "tool": "质量抽检脚本",
+        "intent": "修复统一数据口径（AI辅助诊断流程上线）中的偏差",
+        "action": "通过质量抽检脚本补充校验并闭环问题。",
+        "expected_signal": "偏差收敛，风险回到阈值内。",
+        "observed_signal": "补救动作完成，阶段状态恢复。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "fix_plan",
+          "verification_result"
+        ]
+      },
+      {
+        "step_id": "TX-013",
+        "phase_id": "P03",
+        "subgoal_id": "SG-12",
+        "tool": "权限管理系统",
+        "intent": "推进跨团队协作（AI辅助诊断流程上线）",
+        "action": "调用权限管理系统完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "执行过程触发异常，已通过备选路径恢复。",
+        "status": "recovered",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-014",
+        "phase_id": "P04",
+        "subgoal_id": "SG-05",
+        "tool": "伦理审查工单",
+        "intent": "统一数据口径（AI辅助诊断流程上线）",
+        "action": "调用伦理审查工单完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-015",
+        "phase_id": "P04",
+        "subgoal_id": "SG-06",
+        "tool": "电子病历接口",
+        "intent": "完成交付复盘（AI辅助诊断流程上线）",
+        "action": "调用电子病历接口完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-016",
+        "phase_id": "P04",
+        "subgoal_id": "SG-06",
+        "tool": "权限管理系统",
+        "intent": "完成交付复盘（AI辅助诊断流程上线）",
+        "action": "调用权限管理系统完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-017",
+        "phase_id": "P04",
+        "subgoal_id": "SG-13",
+        "tool": "电子病历接口",
+        "intent": "识别关键风险（AI辅助诊断流程上线）",
+        "action": "调用电子病历接口完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "执行过程触发异常，已通过备选路径恢复。",
+        "status": "recovered",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-018",
+        "phase_id": "P05",
+        "subgoal_id": "SG-01",
+        "tool": "数据脱敏服务",
+        "intent": "优化资源配置（AI辅助诊断流程上线）",
+        "action": "调用数据脱敏服务完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "结果部分达标，仍有关键约束未完全满足。",
+        "status": "partial",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-019",
+        "phase_id": "P05",
+        "subgoal_id": "SG-01",
+        "tool": "质量抽检脚本",
+        "intent": "修复优化资源配置（AI辅助诊断流程上线）中的偏差",
+        "action": "通过质量抽检脚本补充校验并闭环问题。",
+        "expected_signal": "偏差收敛，风险回到阈值内。",
+        "observed_signal": "补救动作完成，阶段状态恢复。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "fix_plan",
+          "verification_result"
+        ]
+      },
+      {
+        "step_id": "TX-020",
+        "phase_id": "P05",
+        "subgoal_id": "SG-01",
+        "tool": "告警与值班系统",
+        "intent": "优化资源配置（AI辅助诊断流程上线）",
+        "action": "调用告警与值班系统完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-021",
+        "phase_id": "P05",
+        "subgoal_id": "SG-08",
+        "tool": "电子病历接口",
+        "intent": "统一数据口径（AI辅助诊断流程上线）",
+        "action": "调用电子病历接口完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-022",
+        "phase_id": "P05",
+        "subgoal_id": "SG-08",
+        "tool": "数据脱敏服务",
+        "intent": "统一数据口径（AI辅助诊断流程上线）",
+        "action": "调用数据脱敏服务完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "执行过程触发异常，已通过备选路径恢复。",
+        "status": "recovered",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-023",
+        "phase_id": "P06",
+        "subgoal_id": "SG-07",
+        "tool": "质量抽检脚本",
+        "intent": "建立回滚方案（AI辅助诊断流程上线）",
+        "action": "调用质量抽检脚本完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-024",
+        "phase_id": "P06",
+        "subgoal_id": "SG-09",
+        "tool": "电子病历接口",
+        "intent": "制定执行策略（AI辅助诊断流程上线）",
+        "action": "调用电子病历接口完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-025",
+        "phase_id": "P06",
+        "subgoal_id": "SG-09",
+        "tool": "数据脱敏服务",
+        "intent": "制定执行策略（AI辅助诊断流程上线）",
+        "action": "调用数据脱敏服务完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-026",
+        "phase_id": "P06",
+        "subgoal_id": "SG-16",
+        "tool": "试验入组数据库",
+        "intent": "执行压力测试（AI辅助诊断流程上线）",
+        "action": "调用试验入组数据库完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-027",
+        "phase_id": "P06",
+        "subgoal_id": "SG-16",
+        "tool": "质量抽检脚本",
+        "intent": "执行压力测试（AI辅助诊断流程上线）",
+        "action": "调用质量抽检脚本完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-028",
+        "phase_id": "P06",
+        "subgoal_id": "SG-17",
+        "tool": "电子病历接口",
+        "intent": "推进跨团队协作（AI辅助诊断流程上线）",
+        "action": "调用电子病历接口完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "结果部分达标，仍有关键约束未完全满足。",
+        "status": "partial",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-029",
+        "phase_id": "P06",
+        "subgoal_id": "SG-17",
+        "tool": "质量抽检脚本",
+        "intent": "修复推进跨团队协作（AI辅助诊断流程上线）中的偏差",
+        "action": "通过质量抽检脚本补充校验并闭环问题。",
+        "expected_signal": "偏差收敛，风险回到阈值内。",
+        "observed_signal": "补救动作完成，阶段状态恢复。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "fix_plan",
+          "verification_result"
+        ]
+      },
+      {
+        "step_id": "TX-030",
+        "phase_id": "P06",
+        "subgoal_id": "SG-17",
+        "tool": "伦理审查工单",
+        "intent": "推进跨团队协作（AI辅助诊断流程上线）",
+        "action": "调用伦理审查工单完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "执行过程触发异常，已通过备选路径恢复。",
+        "status": "recovered",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-031",
+        "phase_id": "P07",
+        "subgoal_id": "SG-03",
+        "tool": "权限管理系统",
+        "intent": "安排灰度验证（AI辅助诊断流程上线）",
+        "action": "调用权限管理系统完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "执行过程触发异常，已通过备选路径恢复。",
+        "status": "recovered",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-032",
+        "phase_id": "P07",
+        "subgoal_id": "SG-14",
+        "tool": "模型评估平台",
+        "intent": "梳理现状基线（AI辅助诊断流程上线）",
+        "action": "调用模型评估平台完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-033",
+        "phase_id": "P07",
+        "subgoal_id": "SG-14",
+        "tool": "伦理审查工单",
+        "intent": "梳理现状基线（AI辅助诊断流程上线）",
+        "action": "调用伦理审查工单完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      }
+    ],
+    "correction_trace": [
+      {
+        "correction_id": "CR-001",
+        "trigger_event": "监管部门临时追加一项审计字段要求。",
+        "phase_id": "P02",
+        "impact_level": "low",
+        "diagnosis": "定位偏差来源，区分容量瓶颈、依赖阻塞与约束冲突。",
+        "affected_step_ids": [
+          "TX-008",
+          "TX-009",
+          "TX-010"
+        ],
+        "replan_actions": [
+          "冻结非关键任务并释放资源给关键路径。",
+          "更新里程碑顺序，优先保护硬约束与主目标。",
+          "增加监控频率并设置异常升级阈值。"
+        ],
+        "rollback_guard": "若纠偏后关键指标连续两个观测窗口未恢复，立即回退到前一稳定版本。",
+        "verification": "检查阶段达成率、预算消耗与风险敞口是否回归阈值内。",
+        "window_weeks": [
+          2,
+          2
+        ]
+      },
+      {
+        "correction_id": "CR-002",
+        "trigger_event": "模型离线评估出现分布漂移告警。",
+        "phase_id": "P07",
+        "impact_level": "high",
+        "diagnosis": "定位偏差来源，区分容量瓶颈、依赖阻塞与约束冲突。",
+        "affected_step_ids": [
+          "TX-031",
+          "TX-032",
+          "TX-033"
+        ],
+        "replan_actions": [
+          "冻结非关键任务并释放资源给关键路径。",
+          "更新里程碑顺序，优先保护硬约束与主目标。",
+          "增加监控频率并设置异常升级阈值。"
+        ],
+        "rollback_guard": "若纠偏后关键指标连续两个观测窗口未恢复，立即回退到前一稳定版本。",
+        "verification": "检查阶段达成率、预算消耗与风险敞口是否回归阈值内。",
+        "window_weeks": [
+          7,
+          4
+        ]
+      },
+      {
+        "correction_id": "CR-003",
+        "trigger_event": "其中一个中心站点数据上传延迟48小时。",
+        "phase_id": "P07",
+        "impact_level": "medium",
+        "diagnosis": "定位偏差来源，区分容量瓶颈、依赖阻塞与约束冲突。",
+        "affected_step_ids": [
+          "TX-031",
+          "TX-032",
+          "TX-033"
+        ],
+        "replan_actions": [
+          "冻结非关键任务并释放资源给关键路径。",
+          "更新里程碑顺序，优先保护硬约束与主目标。",
+          "增加监控频率并设置异常升级阈值。"
+        ],
+        "rollback_guard": "若纠偏后关键指标连续两个观测窗口未恢复，立即回退到前一稳定版本。",
+        "verification": "检查阶段达成率、预算消耗与风险敞口是否回归阈值内。",
+        "window_weeks": [
+          7,
+          4
+        ]
+      },
+      {
+        "correction_id": "CR-004",
+        "trigger_event": "关键第三方服务出现间歇性超时。",
+        "phase_id": "P05",
+        "impact_level": "low",
+        "diagnosis": "定位偏差来源，区分容量瓶颈、依赖阻塞与约束冲突。",
+        "affected_step_ids": [
+          "TX-018",
+          "TX-019",
+          "TX-020"
+        ],
+        "replan_actions": [
+          "冻结非关键任务并释放资源给关键路径。",
+          "更新里程碑顺序，优先保护硬约束与主目标。",
+          "增加监控频率并设置异常升级阈值。"
+        ],
+        "rollback_guard": "若纠偏后关键指标连续两个观测窗口未恢复，立即回退到前一稳定版本。",
+        "verification": "检查阶段达成率、预算消耗与风险敞口是否回归阈值内。",
+        "window_weeks": [
+          5,
+          4
+        ]
+      }
+    ],
+    "turns": [
+      {
+        "turn_id": "T-001",
+        "role": "planner",
+        "type": "long_range_planning",
+        "content": "已形成7阶段长程计划，覆盖关键依赖、工具与里程碑。"
+      },
+      {
+        "turn_id": "T-002",
+        "role": "planner",
+        "type": "phase_brief",
+        "content": "P01目标=推进第1阶段里程碑，收敛关键不确定性并保障约束满足。，关键信号=关键路径延迟累计。",
+        "ref_phase_id": "P01"
+      },
+      {
+        "turn_id": "T-003",
+        "role": "planner",
+        "type": "phase_brief",
+        "content": "P02目标=推进第2阶段里程碑，收敛关键不确定性并保障约束满足。，关键信号=预算消耗偏离阈值。",
+        "ref_phase_id": "P02"
+      },
+      {
+        "turn_id": "T-004",
+        "role": "planner",
+        "type": "phase_brief",
+        "content": "P03目标=推进第3阶段里程碑，收敛关键不确定性并保障约束满足。，关键信号=预算消耗偏离阈值。",
+        "ref_phase_id": "P03"
+      },
+      {
+        "turn_id": "T-005",
+        "role": "planner",
+        "type": "phase_brief",
+        "content": "P04目标=推进第4阶段里程碑，收敛关键不确定性并保障约束满足。，关键信号=预算消耗偏离阈值。",
+        "ref_phase_id": "P04"
+      },
+      {
+        "turn_id": "T-006",
+        "role": "planner",
+        "type": "phase_brief",
+        "content": "P05目标=推进第5阶段里程碑，收敛关键不确定性并保障约束满足。，关键信号=关键路径延迟累计。",
+        "ref_phase_id": "P05"
+      },
+      {
+        "turn_id": "T-007",
+        "role": "planner",
+        "type": "phase_brief",
+        "content": "P06目标=推进第6阶段里程碑，收敛关键不确定性并保障约束满足。，关键信号=跨团队依赖阻塞。",
+        "ref_phase_id": "P06"
+      },
+      {
+        "turn_id": "T-008",
+        "role": "executor",
+        "type": "tool_execution",
+        "content": "在P01执行电子病历接口，状态=success。",
+        "tool": "电子病历接口",
+        "ref_step_id": "TX-001"
+      },
+      {
+        "turn_id": "T-009",
+        "role": "executor",
+        "type": "tool_execution",
+        "content": "在P01执行告警与值班系统，状态=partial。",
+        "tool": "告警与值班系统",
+        "ref_step_id": "TX-002"
+      },
+      {
+        "turn_id": "T-010",
+        "role": "executor",
+        "type": "tool_execution",
+        "content": "在P01执行质量抽检脚本，状态=success。",
+        "tool": "质量抽检脚本",
+        "ref_step_id": "TX-003"
+      },
+      {
+        "turn_id": "T-011",
+        "role": "executor",
+        "type": "tool_execution",
+        "content": "在P01执行质量抽检脚本，状态=recovered。",
+        "tool": "质量抽检脚本",
+        "ref_step_id": "TX-004"
+      },
+      {
+        "turn_id": "T-012",
+        "role": "executor",
+        "type": "tool_execution",
+        "content": "在P01执行伦理审查工单，状态=success。",
+        "tool": "伦理审查工单",
+        "ref_step_id": "TX-005"
+      },
+      {
+        "turn_id": "T-013",
+        "role": "executor",
+        "type": "tool_execution",
+        "content": "在P01执行权限管理系统，状态=success。",
+        "tool": "权限管理系统",
+        "ref_step_id": "TX-006"
+      },
+      {
+        "turn_id": "T-014",
+        "role": "executor",
+        "type": "tool_execution",
+        "content": "在P01执行法规条款知识库，状态=success。",
+        "tool": "法规条款知识库",
+        "ref_step_id": "TX-007"
+      },
+      {
+        "turn_id": "T-015",
+        "role": "executor",
+        "type": "tool_execution",
+        "content": "在P02执行模型评估平台，状态=partial。",
+        "tool": "模型评估平台",
+        "ref_step_id": "TX-008"
+      },
+      {
+        "turn_id": "T-016",
+        "role": "executor",
+        "type": "tool_execution",
+        "content": "在P02执行质量抽检脚本，状态=success。",
+        "tool": "质量抽检脚本",
+        "ref_step_id": "TX-009"
+      },
+      {
+        "turn_id": "T-017",
+        "role": "executor",
+        "type": "tool_execution",
+        "content": "在P02执行电子病历接口，状态=success。",
+        "tool": "电子病历接口",
+        "ref_step_id": "TX-010"
+      },
+      {
+        "turn_id": "T-018",
+        "role": "executor",
+        "type": "tool_execution",
+        "content": "在P03执行数据脱敏服务，状态=partial。",
+        "tool": "数据脱敏服务",
+        "ref_step_id": "TX-011"
+      },
+      {
+        "turn_id": "T-019",
+        "role": "executor",
+        "type": "tool_execution",
+        "content": "在P03执行质量抽检脚本，状态=success。",
+        "tool": "质量抽检脚本",
+        "ref_step_id": "TX-012"
+      },
+      {
+        "turn_id": "T-020",
+        "role": "critic",
+        "type": "trajectory_correction",
+        "content": "触发事件: 监管部门临时追加一项审计字段要求。，执行纠偏并重排优先级。",
+        "ref_correction_id": "CR-001"
+      },
+      {
+        "turn_id": "T-021",
+        "role": "planner",
+        "type": "replan_decision",
+        "content": "已根据纠偏结果更新阶段门禁与资源配比，继续推进主路径。",
+        "ref_correction_id": "CR-001"
+      },
+      {
+        "turn_id": "T-022",
+        "role": "critic",
+        "type": "trajectory_correction",
+        "content": "触发事件: 模型离线评估出现分布漂移告警。，执行纠偏并重排优先级。",
+        "ref_correction_id": "CR-002"
+      },
+      {
+        "turn_id": "T-023",
+        "role": "planner",
+        "type": "replan_decision",
+        "content": "已根据纠偏结果更新阶段门禁与资源配比，继续推进主路径。",
+        "ref_correction_id": "CR-002"
+      },
+      {
+        "turn_id": "T-024",
+        "role": "critic",
+        "type": "trajectory_correction",
+        "content": "触发事件: 其中一个中心站点数据上传延迟48小时。，执行纠偏并重排优先级。",
+        "ref_correction_id": "CR-003"
+      },
+      {
+        "turn_id": "T-025",
+        "role": "planner",
+        "type": "replan_decision",
+        "content": "已根据纠偏结果更新阶段门禁与资源配比，继续推进主路径。",
+        "ref_correction_id": "CR-003"
+      },
+      {
+        "turn_id": "T-026",
+        "role": "critic",
+        "type": "trajectory_correction",
+        "content": "触发事件: 关键第三方服务出现间歇性超时。，执行纠偏并重排优先级。",
+        "ref_correction_id": "CR-004"
+      },
+      {
+        "turn_id": "T-027",
+        "role": "planner",
+        "type": "replan_decision",
+        "content": "已根据纠偏结果更新阶段门禁与资源配比，继续推进主路径。",
+        "ref_correction_id": "CR-004"
+      }
+    ]
+  },
+  "trajectory_metrics": {
+    "plan_phases": 7,
+    "tool_steps": 33,
+    "correction_steps": 4,
+    "turns": 27,
+    "tool_coverage": 0.9,
+    "phase_execution_coverage": 1.0,
+    "correction_action_coverage": 1.0,
+    "correction_link_coverage": 1.0
+  },
+  "trajectory_quality": {
+    "score": 0.986,
+    "components": {
+      "phase_depth": 1.0,
+      "execution_density": 1.0,
+      "correction_density": 1.0,
+      "tool_coverage": 0.9,
+      "phase_execution_coverage": 1.0,
+      "turn_richness": 1.0,
+      "correction_link_coverage": 1.0
+    }
+  },
+  "pipeline_version": "trajectory_pipeline_v2"
+}

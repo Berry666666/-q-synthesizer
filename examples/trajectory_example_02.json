@@ -1,0 +1,1744 @@
+{
+  "id": "Q-expert-d3e420eed0",
+  "created_at": "2026-04-16T03:08:20.499849Z",
+  "profile": "expert",
+  "domain": "AI基础设施与MLOps治理",
+  "Q": "你是星环智能的总负责人。\n\n【背景】\n围绕模型发布稳定性，星环智能近期出现频繁告警与资源争用，需要形成系统性治理方案。\n\n【核心目标】\n给出具备回滚与应急预案的实施路径。\n\n【当前资源与环境】\n- 团队规模: 10人\n- 时间窗口: 7周\n- 可用预算上限: 292k\n- 可调用工具: 训练作业调度器, 在线监控平台, 模型注册中心, 容量预测面板, 发布流水线, 特征存储, 故障演练脚本, 日志检索系统, 实验追踪系统, GPU资源池\n\n【任务要求（复杂子目标）】\n- SG-01. 安排灰度验证（模型发布稳定性）\n- SG-02. 安排灰度验证（模型发布稳定性）\n- SG-03. 优化资源配置（模型发布稳定性）\n- SG-04. 完成交付复盘（模型发布稳定性）\n- SG-05. 统一数据口径（模型发布稳定性）\n- SG-06. 推进跨团队协作（模型发布稳定性）\n- SG-07. 梳理现状基线（模型发布稳定性）\n- SG-08. 制定执行策略（模型发布稳定性）\n- SG-09. 统一数据口径（模型发布稳定性）\n- SG-10. 拆解里程碑（模型发布稳定性）\n- ... 其余9个子任务需要你自行统筹与编排。\n\n【硬约束（必须满足）】\n- 关键模型发布必须支持一键回滚。\n- 生产环境不可出现超过30分钟不可用窗口。\n- 不能突破季度算力预算上限。\n- 必须覆盖高优先级告警的值班机制。\n- 必须保留灰度发布与流量切分能力。\n- 不得牺牲基础安全策略换取短期性能。\n- 关键里程碑评审必须覆盖不少于6类风险维度。\n- 每周必须完成不少于3次阶段性质量抽检。\n- 所有高风险任务必须预留至少20%缓冲时间。\n- 对外依赖接口故障恢复时间不得超过138分钟。\n- 至少3个关键节点需要双人复核。\n- 关键路径任务不得连续延期超过2次。\n- 资源调度冲突在同一工作日内必须闭环处理。\n- 每个阶段至少保留2个可替代执行方案。\n- 高优先级告警确认时延不得超过20分钟。\n- 跨团队阻塞问题必须在17小时内升级处理。\n- 附加硬约束-1: 不得弱化主目标验收标准。\n- 附加硬约束-2: 不得弱化主目标验收标准。\n- 附加硬约束-3: 不得弱化主目标验收标准。\n- 附加硬约束-4: 不得弱化主目标验收标准。\n- 附加硬约束-5: 不得弱化主目标验收标准。\n- 附加硬约束-6: 不得弱化主目标验收标准。\n- 附加硬约束-7: 不得弱化主目标验收标准。\n- 附加硬约束-8: 不得弱化主目标验收标准。\n- 附加硬约束-9: 不得弱化主目标验收标准。\n- 总预算上限为292k，超出必须给出明确削减路径。\n- 项目总工期不超过7周。\n- 每周最多并行4个高风险任务。\n- 核心里程碑最迟在第5周完成。\n\n【软偏好（尽量满足）】\n- 优先保留后续架构扩展空间。\n- 优先提升关键链路可观测性。\n\n【动态变化事件】\n- EV-01（在第3阶段触发，影响等级:medium）: 关键模型出现线上性能退化告警。\n- EV-02（在第2阶段触发，影响等级:high）: 某区域机房网络抖动导致延迟升高。\n- EV-03（在第7阶段触发，影响等级:high）: 第2周突发高并发流量，推理QPS翻倍。\n- EV-04（在第4阶段触发，影响等级:low）: 新业务线临时申请高优先级资源配额。\n- EV-05（在第5阶段触发，影响等级:low）: 核心依赖库发布安全补丁，需紧急评估。\n\n【输出要求】\n- 定义故障处置与演练计划。\n- 给出指标体系和SLA达成路径。\n- 明确技术债登记与偿还机制。\n- 输出分阶段发布和验收门禁。\n- 需要给出分阶段长程规划、依赖关系、关键里程碑、资源分配、风险处置与回滚方案。\n- 请说明在突发事件触发后如何重排优先级，且保证目标不失控。\n\n【补充上下文（可能包含噪声信息，请自行判断相关性）】\n- HR希望收集团队对办公环境的改进建议。\n- 品牌团队建议统一海报视觉风格。\n- 有人提议在周会增加轻松问答环节。\n- 行政正在统计下季度差旅预算偏好。",
+  "quality": {
+    "score": 0.88,
+    "components": {
+      "subgoal_complexity": 1.0,
+      "dependency_depth": 0.5,
+      "constraint_density": 1.0,
+      "dynamic_events": 1.0,
+      "tool_diversity": 1.0
+    },
+    "feasibility": {
+      "total_hours": 429,
+      "total_budget_k": 219,
+      "capacity_hours": 1680,
+      "budget_limit_k": 292,
+      "feasible_hours": true,
+      "feasible_budget": true
+    },
+    "graph_depth": 4
+  },
+  "context": {
+    "background": "围绕模型发布稳定性，星环智能近期出现频繁告警与资源争用，需要形成系统性治理方案。",
+    "goal": "给出具备回滚与应急预案的实施路径。",
+    "hard_constraints": [
+      "关键模型发布必须支持一键回滚。",
+      "生产环境不可出现超过30分钟不可用窗口。",
+      "不能突破季度算力预算上限。",
+      "必须覆盖高优先级告警的值班机制。",
+      "必须保留灰度发布与流量切分能力。",
+      "不得牺牲基础安全策略换取短期性能。",
+      "关键里程碑评审必须覆盖不少于6类风险维度。",
+      "每周必须完成不少于3次阶段性质量抽检。",
+      "所有高风险任务必须预留至少20%缓冲时间。",
+      "对外依赖接口故障恢复时间不得超过138分钟。",
+      "至少3个关键节点需要双人复核。",
+      "关键路径任务不得连续延期超过2次。",
+      "资源调度冲突在同一工作日内必须闭环处理。",
+      "每个阶段至少保留2个可替代执行方案。",
+      "高优先级告警确认时延不得超过20分钟。",
+      "跨团队阻塞问题必须在17小时内升级处理。",
+      "附加硬约束-1: 不得弱化主目标验收标准。",
+      "附加硬约束-2: 不得弱化主目标验收标准。",
+      "附加硬约束-3: 不得弱化主目标验收标准。",
+      "附加硬约束-4: 不得弱化主目标验收标准。",
+      "附加硬约束-5: 不得弱化主目标验收标准。",
+      "附加硬约束-6: 不得弱化主目标验收标准。",
+      "附加硬约束-7: 不得弱化主目标验收标准。",
+      "附加硬约束-8: 不得弱化主目标验收标准。",
+      "附加硬约束-9: 不得弱化主目标验收标准。",
+      "总预算上限为292k，超出必须给出明确削减路径。",
+      "项目总工期不超过7周。",
+      "每周最多并行4个高风险任务。",
+      "核心里程碑最迟在第5周完成。"
+    ],
+    "soft_preferences": [
+      "优先保留后续架构扩展空间。",
+      "优先提升关键链路可观测性。"
+    ],
+    "dynamic_events": [
+      {
+        "id": "EV-01",
+        "trigger_phase": 3,
+        "description": "关键模型出现线上性能退化告警。",
+        "impact_level": "medium",
+        "required_action": "触发应急分支：重排优先级、收缩范围、并保留合规与回滚能力。"
+      },
+      {
+        "id": "EV-02",
+        "trigger_phase": 2,
+        "description": "某区域机房网络抖动导致延迟升高。",
+        "impact_level": "high",
+        "required_action": "触发应急分支：重排优先级、收缩范围、并保留合规与回滚能力。"
+      },
+      {
+        "id": "EV-03",
+        "trigger_phase": 7,
+        "description": "第2周突发高并发流量，推理QPS翻倍。",
+        "impact_level": "high",
+        "required_action": "触发应急分支：重排优先级、收缩范围、并保留合规与回滚能力。"
+      },
+      {
+        "id": "EV-04",
+        "trigger_phase": 4,
+        "description": "新业务线临时申请高优先级资源配额。",
+        "impact_level": "low",
+        "required_action": "触发应急分支：重排优先级、收缩范围、并保留合规与回滚能力。"
+      },
+      {
+        "id": "EV-05",
+        "trigger_phase": 5,
+        "description": "核心依赖库发布安全补丁，需紧急评估。",
+        "impact_level": "low",
+        "required_action": "触发应急分支：重排优先级、收缩范围、并保留合规与回滚能力。"
+      }
+    ],
+    "deliverables": [
+      "定义故障处置与演练计划。",
+      "给出指标体系和SLA达成路径。",
+      "明确技术债登记与偿还机制。",
+      "输出分阶段发布和验收门禁。"
+    ],
+    "noise_context": [
+      "HR希望收集团队对办公环境的改进建议。",
+      "品牌团队建议统一海报视觉风格。",
+      "有人提议在周会增加轻松问答环节。",
+      "行政正在统计下季度差旅预算偏好。"
+    ],
+    "available_tools": [
+      "训练作业调度器",
+      "在线监控平台",
+      "模型注册中心",
+      "容量预测面板",
+      "发布流水线",
+      "特征存储",
+      "故障演练脚本",
+      "日志检索系统",
+      "实验追踪系统",
+      "GPU资源池"
+    ]
+  },
+  "meta": {
+    "org": "星环智能",
+    "focus": "模型发布稳定性",
+    "team_size": 10,
+    "timeline_weeks": 7,
+    "budget_k": 292,
+    "parallel_limit": 4,
+    "subgoal_count": 19,
+    "constraint_count": 29,
+    "event_count": 5,
+    "tool_count": 10
+  },
+  "task_graph": {
+    "nodes": [
+      {
+        "id": "SG-01",
+        "title": "安排灰度验证（模型发布稳定性）",
+        "objective": "在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。",
+        "dependencies": [],
+        "required_tools": [
+          "模型注册中心",
+          "日志检索系统"
+        ],
+        "estimated_hours": 14,
+        "estimated_budget_k": 9,
+        "layer": 4
+      },
+      {
+        "id": "SG-02",
+        "title": "安排灰度验证（模型发布稳定性）",
+        "objective": "在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。",
+        "dependencies": [
+          "SG-01"
+        ],
+        "required_tools": [
+          "GPU资源池",
+          "日志检索系统"
+        ],
+        "estimated_hours": 22,
+        "estimated_budget_k": 16,
+        "layer": 5
+      },
+      {
+        "id": "SG-03",
+        "title": "优化资源配置（模型发布稳定性）",
+        "objective": "在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。",
+        "dependencies": [],
+        "required_tools": [
+          "容量预测面板",
+          "特征存储",
+          "发布流水线"
+        ],
+        "estimated_hours": 24,
+        "estimated_budget_k": 12,
+        "layer": 4
+      },
+      {
+        "id": "SG-04",
+        "title": "完成交付复盘（模型发布稳定性）",
+        "objective": "在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。",
+        "dependencies": [],
+        "required_tools": [
+          "容量预测面板"
+        ],
+        "estimated_hours": 38,
+        "estimated_budget_k": 18,
+        "layer": 4
+      },
+      {
+        "id": "SG-05",
+        "title": "统一数据口径（模型发布稳定性）",
+        "objective": "在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。",
+        "dependencies": [],
+        "required_tools": [
+          "模型注册中心",
+          "发布流水线",
+          "训练作业调度器"
+        ],
+        "estimated_hours": 17,
+        "estimated_budget_k": 5,
+        "layer": 3
+      },
+      {
+        "id": "SG-06",
+        "title": "推进跨团队协作（模型发布稳定性）",
+        "objective": "在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。",
+        "dependencies": [
+          "SG-03",
+          "SG-04",
+          "SG-02"
+        ],
+        "required_tools": [
+          "发布流水线",
+          "在线监控平台",
+          "日志检索系统"
+        ],
+        "estimated_hours": 30,
+        "estimated_budget_k": 4,
+        "layer": 6
+      },
+      {
+        "id": "SG-07",
+        "title": "梳理现状基线（模型发布稳定性）",
+        "objective": "在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。",
+        "dependencies": [],
+        "required_tools": [
+          "GPU资源池",
+          "日志检索系统"
+        ],
+        "estimated_hours": 23,
+        "estimated_budget_k": 14,
+        "layer": 0
+      },
+      {
+        "id": "SG-08",
+        "title": "制定执行策略（模型发布稳定性）",
+        "objective": "在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。",
+        "dependencies": [
+          "SG-07"
+        ],
+        "required_tools": [
+          "GPU资源池",
+          "训练作业调度器",
+          "实验追踪系统"
+        ],
+        "estimated_hours": 24,
+        "estimated_budget_k": 4,
+        "layer": 1
+      },
+      {
+        "id": "SG-09",
+        "title": "统一数据口径（模型发布稳定性）",
+        "objective": "在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。",
+        "dependencies": [
+          "SG-03",
+          "SG-04",
+          "SG-07"
+        ],
+        "required_tools": [
+          "在线监控平台"
+        ],
+        "estimated_hours": 20,
+        "estimated_budget_k": 5,
+        "layer": 6
+      },
+      {
+        "id": "SG-10",
+        "title": "拆解里程碑（模型发布稳定性）",
+        "objective": "在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。",
+        "dependencies": [
+          "SG-08"
+        ],
+        "required_tools": [
+          "发布流水线",
+          "训练作业调度器"
+        ],
+        "estimated_hours": 19,
+        "estimated_budget_k": 8,
+        "layer": 3
+      },
+      {
+        "id": "SG-11",
+        "title": "拆解里程碑（模型发布稳定性）",
+        "objective": "在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。",
+        "dependencies": [
+          "SG-07"
+        ],
+        "required_tools": [
+          "实验追踪系统",
+          "特征存储"
+        ],
+        "estimated_hours": 29,
+        "estimated_budget_k": 17,
+        "layer": 1
+      },
+      {
+        "id": "SG-12",
+        "title": "执行压力测试（模型发布稳定性）",
+        "objective": "在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。",
+        "dependencies": [
+          "SG-08"
+        ],
+        "required_tools": [
+          "发布流水线",
+          "在线监控平台"
+        ],
+        "estimated_hours": 35,
+        "estimated_budget_k": 14,
+        "layer": 5
+      },
+      {
+        "id": "SG-13",
+        "title": "识别关键风险（模型发布稳定性）",
+        "objective": "在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。",
+        "dependencies": [
+          "SG-08",
+          "SG-07",
+          "SG-11"
+        ],
+        "required_tools": [
+          "在线监控平台"
+        ],
+        "estimated_hours": 20,
+        "estimated_budget_k": 18,
+        "layer": 4
+      },
+      {
+        "id": "SG-14",
+        "title": "统一数据口径（模型发布稳定性）",
+        "objective": "在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。",
+        "dependencies": [
+          "SG-05"
+        ],
+        "required_tools": [
+          "训练作业调度器",
+          "日志检索系统",
+          "在线监控平台"
+        ],
+        "estimated_hours": 16,
+        "estimated_budget_k": 8,
+        "layer": 6
+      },
+      {
+        "id": "SG-15",
+        "title": "安排灰度验证（模型发布稳定性）",
+        "objective": "在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。",
+        "dependencies": [
+          "SG-11",
+          "SG-07"
+        ],
+        "required_tools": [
+          "在线监控平台",
+          "故障演练脚本",
+          "训练作业调度器"
+        ],
+        "estimated_hours": 22,
+        "estimated_budget_k": 16,
+        "layer": 2
+      },
+      {
+        "id": "SG-16",
+        "title": "建立回滚方案（模型发布稳定性）",
+        "objective": "在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。",
+        "dependencies": [
+          "SG-07",
+          "SG-05",
+          "SG-08"
+        ],
+        "required_tools": [
+          "容量预测面板",
+          "模型注册中心"
+        ],
+        "estimated_hours": 14,
+        "estimated_budget_k": 18,
+        "layer": 4
+      },
+      {
+        "id": "SG-17",
+        "title": "统一数据口径（模型发布稳定性）",
+        "objective": "在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。",
+        "dependencies": [
+          "SG-07"
+        ],
+        "required_tools": [
+          "发布流水线",
+          "在线监控平台",
+          "训练作业调度器"
+        ],
+        "estimated_hours": 26,
+        "estimated_budget_k": 13,
+        "layer": 1
+      },
+      {
+        "id": "SG-18",
+        "title": "执行压力测试（模型发布稳定性）",
+        "objective": "在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。",
+        "dependencies": [
+          "SG-08",
+          "SG-03",
+          "SG-05"
+        ],
+        "required_tools": [
+          "故障演练脚本",
+          "在线监控平台"
+        ],
+        "estimated_hours": 25,
+        "estimated_budget_k": 15,
+        "layer": 5
+      },
+      {
+        "id": "SG-19",
+        "title": "建立回滚方案（模型发布稳定性）",
+        "objective": "在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。",
+        "dependencies": [
+          "SG-15",
+          "SG-11",
+          "SG-08"
+        ],
+        "required_tools": [
+          "GPU资源池",
+          "故障演练脚本"
+        ],
+        "estimated_hours": 11,
+        "estimated_budget_k": 5,
+        "layer": 3
+      }
+    ],
+    "edges": [
+      {
+        "from": "SG-01",
+        "to": "SG-02"
+      },
+      {
+        "from": "SG-03",
+        "to": "SG-06"
+      },
+      {
+        "from": "SG-04",
+        "to": "SG-06"
+      },
+      {
+        "from": "SG-02",
+        "to": "SG-06"
+      },
+      {
+        "from": "SG-07",
+        "to": "SG-08"
+      },
+      {
+        "from": "SG-03",
+        "to": "SG-09"
+      },
+      {
+        "from": "SG-04",
+        "to": "SG-09"
+      },
+      {
+        "from": "SG-07",
+        "to": "SG-09"
+      },
+      {
+        "from": "SG-08",
+        "to": "SG-10"
+      },
+      {
+        "from": "SG-07",
+        "to": "SG-11"
+      },
+      {
+        "from": "SG-08",
+        "to": "SG-12"
+      },
+      {
+        "from": "SG-08",
+        "to": "SG-13"
+      },
+      {
+        "from": "SG-07",
+        "to": "SG-13"
+      },
+      {
+        "from": "SG-11",
+        "to": "SG-13"
+      },
+      {
+        "from": "SG-05",
+        "to": "SG-14"
+      },
+      {
+        "from": "SG-11",
+        "to": "SG-15"
+      },
+      {
+        "from": "SG-07",
+        "to": "SG-15"
+      },
+      {
+        "from": "SG-07",
+        "to": "SG-16"
+      },
+      {
+        "from": "SG-05",
+        "to": "SG-16"
+      },
+      {
+        "from": "SG-08",
+        "to": "SG-16"
+      },
+      {
+        "from": "SG-07",
+        "to": "SG-17"
+      },
+      {
+        "from": "SG-08",
+        "to": "SG-18"
+      },
+      {
+        "from": "SG-03",
+        "to": "SG-18"
+      },
+      {
+        "from": "SG-05",
+        "to": "SG-18"
+      },
+      {
+        "from": "SG-15",
+        "to": "SG-19"
+      },
+      {
+        "from": "SG-11",
+        "to": "SG-19"
+      },
+      {
+        "from": "SG-08",
+        "to": "SG-19"
+      }
+    ]
+  },
+  "A": "一、总体策略\n先统一口径与关键依赖，再分阶段推进执行；每个阶段设置可观测指标、风险门禁与回滚条件。\n\n二、分阶段执行计划\n阶段1（目标: 收敛关键不确定性并推进里程碑）\n- SG-07 梳理现状基线（模型发布稳定性）: 依赖[无]；动作= 在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。；工具= GPU资源池, 日志检索系统；预估工时=23h；预算=14k\n\n阶段2（目标: 收敛关键不确定性并推进里程碑）\n- SG-08 制定执行策略（模型发布稳定性）: 依赖[SG-07]；动作= 在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。；工具= GPU资源池, 训练作业调度器, 实验追踪系统；预估工时=24h；预算=4k\n- SG-11 拆解里程碑（模型发布稳定性）: 依赖[SG-07]；动作= 在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。；工具= 实验追踪系统, 特征存储；预估工时=29h；预算=17k\n- SG-17 统一数据口径（模型发布稳定性）: 依赖[SG-07]；动作= 在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。；工具= 发布流水线, 在线监控平台, 训练作业调度器；预估工时=26h；预算=13k\n\n阶段3（目标: 收敛关键不确定性并推进里程碑）\n- SG-15 安排灰度验证（模型发布稳定性）: 依赖[SG-11, SG-07]；动作= 在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。；工具= 在线监控平台, 故障演练脚本, 训练作业调度器；预估工时=22h；预算=16k\n\n阶段4（目标: 收敛关键不确定性并推进里程碑）\n- SG-05 统一数据口径（模型发布稳定性）: 依赖[无]；动作= 在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。；工具= 模型注册中心, 发布流水线, 训练作业调度器；预估工时=17h；预算=5k\n- SG-10 拆解里程碑（模型发布稳定性）: 依赖[SG-08]；动作= 在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。；工具= 发布流水线, 训练作业调度器；预估工时=19h；预算=8k\n- SG-19 建立回滚方案（模型发布稳定性）: 依赖[SG-15, SG-11, SG-08]；动作= 在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。；工具= GPU资源池, 故障演练脚本；预估工时=11h；预算=5k\n\n阶段5（目标: 收敛关键不确定性并推进里程碑）\n- SG-01 安排灰度验证（模型发布稳定性）: 依赖[无]；动作= 在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。；工具= 模型注册中心, 日志检索系统；预估工时=14h；预算=9k\n- SG-03 优化资源配置（模型发布稳定性）: 依赖[无]；动作= 在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。；工具= 容量预测面板, 特征存储, 发布流水线；预估工时=24h；预算=12k\n- SG-04 完成交付复盘（模型发布稳定性）: 依赖[无]；动作= 在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。；工具= 容量预测面板；预估工时=38h；预算=18k\n- SG-13 识别关键风险（模型发布稳定性）: 依赖[SG-08, SG-07, SG-11]；动作= 在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。；工具= 在线监控平台；预估工时=20h；预算=18k\n- SG-16 建立回滚方案（模型发布稳定性）: 依赖[SG-07, SG-05, SG-08]；动作= 在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。；工具= 容量预测面板, 模型注册中心；预估工时=14h；预算=18k\n\n阶段6（目标: 收敛关键不确定性并推进里程碑）\n- SG-02 安排灰度验证（模型发布稳定性）: 依赖[SG-01]；动作= 在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。；工具= GPU资源池, 日志检索系统；预估工时=22h；预算=16k\n- SG-12 执行压力测试（模型发布稳定性）: 依赖[SG-08]；动作= 在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。；工具= 发布流水线, 在线监控平台；预估工时=35h；预算=14k\n- SG-18 执行压力测试（模型发布稳定性）: 依赖[SG-08, SG-03, SG-05]；动作= 在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。；工具= 故障演练脚本, 在线监控平台；预估工时=25h；预算=15k\n\n阶段7（目标: 收敛关键不确定性并推进里程碑）\n- SG-06 推进跨团队协作（模型发布稳定性）: 依赖[SG-03, SG-04, SG-02]；动作= 在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。；工具= 发布流水线, 在线监控平台, 日志检索系统；预估工时=30h；预算=4k\n- SG-09 统一数据口径（模型发布稳定性）: 依赖[SG-03, SG-04, SG-07]；动作= 在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。；工具= 在线监控平台；预估工时=20h；预算=5k\n- SG-14 统一数据口径（模型发布稳定性）: 依赖[SG-05]；动作= 在受限资源下完成“模型发布稳定性”相关关键动作，形成可验收结果。；工具= 训练作业调度器, 日志检索系统, 在线监控平台；预估工时=16h；预算=8k\n\n三、动态事件应对\n- EV-01: 当第3阶段触发“关键模型出现线上性能退化告警。”时，执行动作: 触发应急分支：重排优先级、收缩范围、并保留合规与回滚能力。\n- EV-02: 当第2阶段触发“某区域机房网络抖动导致延迟升高。”时，执行动作: 触发应急分支：重排优先级、收缩范围、并保留合规与回滚能力。\n- EV-03: 当第7阶段触发“第2周突发高并发流量，推理QPS翻倍。”时，执行动作: 触发应急分支：重排优先级、收缩范围、并保留合规与回滚能力。\n- EV-04: 当第4阶段触发“新业务线临时申请高优先级资源配额。”时，执行动作: 触发应急分支：重排优先级、收缩范围、并保留合规与回滚能力。\n- EV-05: 当第5阶段触发“核心依赖库发布安全补丁，需紧急评估。”时，执行动作: 触发应急分支：重排优先级、收缩范围、并保留合规与回滚能力。\n\n四、治理与验收\n- 每阶段输出里程碑结果、风险状态、预算消耗与下一阶段准入判断。\n- 若出现关键约束冲突，优先保护合规与可回滚能力，再做范围裁剪。",
+  "industry": "AI基础设施与MLOps治理",
+  "trajectory": {
+    "schema": "long_horizon_trajectory_v2",
+    "pipeline_version": "trajectory_pipeline_v2",
+    "long_range_plan": [
+      {
+        "phase_id": "P01",
+        "phase_goal": "推进第1阶段里程碑，收敛关键不确定性并保障约束满足。",
+        "weeks": [
+          1,
+          1
+        ],
+        "subgoal_ids": [
+          "SG-07"
+        ],
+        "key_tools": [
+          "GPU资源池",
+          "日志检索系统"
+        ],
+        "milestones": [
+          "梳理现状基线（模型发布稳定性）"
+        ],
+        "risk_signal": "跨团队依赖阻塞",
+        "entry_criteria": "上阶段关键依赖满足，资源与权限完成校验。",
+        "exit_criteria": "阶段里程碑完成且风险状态可控，允许进入下一阶段。"
+      },
+      {
+        "phase_id": "P02",
+        "phase_goal": "推进第2阶段里程碑，收敛关键不确定性并保障约束满足。",
+        "weeks": [
+          2,
+          2
+        ],
+        "subgoal_ids": [
+          "SG-08",
+          "SG-11",
+          "SG-17"
+        ],
+        "key_tools": [
+          "GPU资源池",
+          "训练作业调度器",
+          "实验追踪系统",
+          "特征存储",
+          "发布流水线",
+          "在线监控平台"
+        ],
+        "milestones": [
+          "制定执行策略（模型发布稳定性）",
+          "拆解里程碑（模型发布稳定性）",
+          "统一数据口径（模型发布稳定性）"
+        ],
+        "risk_signal": "高优先级告警持续触发",
+        "entry_criteria": "上阶段关键依赖满足，资源与权限完成校验。",
+        "exit_criteria": "阶段里程碑完成且风险状态可控，允许进入下一阶段。"
+      },
+      {
+        "phase_id": "P03",
+        "phase_goal": "推进第3阶段里程碑，收敛关键不确定性并保障约束满足。",
+        "weeks": [
+          3,
+          3
+        ],
+        "subgoal_ids": [
+          "SG-15"
+        ],
+        "key_tools": [
+          "在线监控平台",
+          "故障演练脚本",
+          "训练作业调度器"
+        ],
+        "milestones": [
+          "安排灰度验证（模型发布稳定性）"
+        ],
+        "risk_signal": "关键路径延迟累计",
+        "entry_criteria": "上阶段关键依赖满足，资源与权限完成校验。",
+        "exit_criteria": "阶段里程碑完成且风险状态可控，允许进入下一阶段。"
+      },
+      {
+        "phase_id": "P04",
+        "phase_goal": "推进第4阶段里程碑，收敛关键不确定性并保障约束满足。",
+        "weeks": [
+          4,
+          4
+        ],
+        "subgoal_ids": [
+          "SG-05",
+          "SG-10",
+          "SG-19"
+        ],
+        "key_tools": [
+          "模型注册中心",
+          "发布流水线",
+          "训练作业调度器",
+          "GPU资源池",
+          "故障演练脚本"
+        ],
+        "milestones": [
+          "统一数据口径（模型发布稳定性）",
+          "拆解里程碑（模型发布稳定性）",
+          "建立回滚方案（模型发布稳定性）"
+        ],
+        "risk_signal": "预算消耗偏离阈值",
+        "entry_criteria": "上阶段关键依赖满足，资源与权限完成校验。",
+        "exit_criteria": "阶段里程碑完成且风险状态可控，允许进入下一阶段。"
+      },
+      {
+        "phase_id": "P05",
+        "phase_goal": "推进第5阶段里程碑，收敛关键不确定性并保障约束满足。",
+        "weeks": [
+          5,
+          5
+        ],
+        "subgoal_ids": [
+          "SG-01",
+          "SG-03",
+          "SG-04",
+          "SG-13",
+          "SG-16"
+        ],
+        "key_tools": [
+          "模型注册中心",
+          "日志检索系统",
+          "容量预测面板",
+          "特征存储",
+          "发布流水线",
+          "在线监控平台"
+        ],
+        "milestones": [
+          "安排灰度验证（模型发布稳定性）",
+          "优化资源配置（模型发布稳定性）",
+          "完成交付复盘（模型发布稳定性）"
+        ],
+        "risk_signal": "预算消耗偏离阈值",
+        "entry_criteria": "上阶段关键依赖满足，资源与权限完成校验。",
+        "exit_criteria": "阶段里程碑完成且风险状态可控，允许进入下一阶段。"
+      },
+      {
+        "phase_id": "P06",
+        "phase_goal": "推进第6阶段里程碑，收敛关键不确定性并保障约束满足。",
+        "weeks": [
+          6,
+          6
+        ],
+        "subgoal_ids": [
+          "SG-02",
+          "SG-12",
+          "SG-18"
+        ],
+        "key_tools": [
+          "GPU资源池",
+          "日志检索系统",
+          "发布流水线",
+          "在线监控平台",
+          "故障演练脚本"
+        ],
+        "milestones": [
+          "安排灰度验证（模型发布稳定性）",
+          "执行压力测试（模型发布稳定性）",
+          "执行压力测试（模型发布稳定性）"
+        ],
+        "risk_signal": "模型或系统性能退化",
+        "entry_criteria": "上阶段关键依赖满足，资源与权限完成校验。",
+        "exit_criteria": "阶段里程碑完成且风险状态可控，允许进入下一阶段。"
+      },
+      {
+        "phase_id": "P07",
+        "phase_goal": "推进第7阶段里程碑，收敛关键不确定性并保障约束满足。",
+        "weeks": [
+          7,
+          7
+        ],
+        "subgoal_ids": [
+          "SG-06",
+          "SG-09",
+          "SG-14"
+        ],
+        "key_tools": [
+          "发布流水线",
+          "在线监控平台",
+          "日志检索系统",
+          "训练作业调度器"
+        ],
+        "milestones": [
+          "推进跨团队协作（模型发布稳定性）",
+          "统一数据口径（模型发布稳定性）",
+          "统一数据口径（模型发布稳定性）"
+        ],
+        "risk_signal": "高优先级告警持续触发",
+        "entry_criteria": "上阶段关键依赖满足，资源与权限完成校验。",
+        "exit_criteria": "阶段里程碑完成且风险状态可控，允许进入下一阶段。"
+      }
+    ],
+    "tool_execution": [
+      {
+        "step_id": "TX-001",
+        "phase_id": "P01",
+        "subgoal_id": "SG-07",
+        "tool": "GPU资源池",
+        "intent": "梳理现状基线（模型发布稳定性）",
+        "action": "调用GPU资源池完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "结果部分达标，仍有关键约束未完全满足。",
+        "status": "partial",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-002",
+        "phase_id": "P01",
+        "subgoal_id": "SG-07",
+        "tool": "训练作业调度器",
+        "intent": "修复梳理现状基线（模型发布稳定性）中的偏差",
+        "action": "通过训练作业调度器补充校验并闭环问题。",
+        "expected_signal": "偏差收敛，风险回到阈值内。",
+        "observed_signal": "补救动作完成，阶段状态恢复。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "fix_plan",
+          "verification_result"
+        ]
+      },
+      {
+        "step_id": "TX-003",
+        "phase_id": "P01",
+        "subgoal_id": "SG-07",
+        "tool": "日志检索系统",
+        "intent": "梳理现状基线（模型发布稳定性）",
+        "action": "调用日志检索系统完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-004",
+        "phase_id": "P02",
+        "subgoal_id": "SG-08",
+        "tool": "GPU资源池",
+        "intent": "制定执行策略（模型发布稳定性）",
+        "action": "调用GPU资源池完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-005",
+        "phase_id": "P02",
+        "subgoal_id": "SG-08",
+        "tool": "训练作业调度器",
+        "intent": "制定执行策略（模型发布稳定性）",
+        "action": "调用训练作业调度器完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-006",
+        "phase_id": "P02",
+        "subgoal_id": "SG-11",
+        "tool": "实验追踪系统",
+        "intent": "拆解里程碑（模型发布稳定性）",
+        "action": "调用实验追踪系统完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-007",
+        "phase_id": "P02",
+        "subgoal_id": "SG-11",
+        "tool": "特征存储",
+        "intent": "拆解里程碑（模型发布稳定性）",
+        "action": "调用特征存储完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "结果部分达标，仍有关键约束未完全满足。",
+        "status": "partial",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-008",
+        "phase_id": "P02",
+        "subgoal_id": "SG-11",
+        "tool": "训练作业调度器",
+        "intent": "修复拆解里程碑（模型发布稳定性）中的偏差",
+        "action": "通过训练作业调度器补充校验并闭环问题。",
+        "expected_signal": "偏差收敛，风险回到阈值内。",
+        "observed_signal": "补救动作完成，阶段状态恢复。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "fix_plan",
+          "verification_result"
+        ]
+      },
+      {
+        "step_id": "TX-009",
+        "phase_id": "P02",
+        "subgoal_id": "SG-17",
+        "tool": "发布流水线",
+        "intent": "统一数据口径（模型发布稳定性）",
+        "action": "调用发布流水线完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-010",
+        "phase_id": "P02",
+        "subgoal_id": "SG-17",
+        "tool": "在线监控平台",
+        "intent": "统一数据口径（模型发布稳定性）",
+        "action": "调用在线监控平台完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-011",
+        "phase_id": "P03",
+        "subgoal_id": "SG-15",
+        "tool": "在线监控平台",
+        "intent": "安排灰度验证（模型发布稳定性）",
+        "action": "调用在线监控平台完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-012",
+        "phase_id": "P03",
+        "subgoal_id": "SG-15",
+        "tool": "故障演练脚本",
+        "intent": "安排灰度验证（模型发布稳定性）",
+        "action": "调用故障演练脚本完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-013",
+        "phase_id": "P04",
+        "subgoal_id": "SG-05",
+        "tool": "模型注册中心",
+        "intent": "统一数据口径（模型发布稳定性）",
+        "action": "调用模型注册中心完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-014",
+        "phase_id": "P04",
+        "subgoal_id": "SG-05",
+        "tool": "发布流水线",
+        "intent": "统一数据口径（模型发布稳定性）",
+        "action": "调用发布流水线完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-015",
+        "phase_id": "P04",
+        "subgoal_id": "SG-10",
+        "tool": "发布流水线",
+        "intent": "拆解里程碑（模型发布稳定性）",
+        "action": "调用发布流水线完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "结果部分达标，仍有关键约束未完全满足。",
+        "status": "partial",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-016",
+        "phase_id": "P04",
+        "subgoal_id": "SG-10",
+        "tool": "训练作业调度器",
+        "intent": "修复拆解里程碑（模型发布稳定性）中的偏差",
+        "action": "通过训练作业调度器补充校验并闭环问题。",
+        "expected_signal": "偏差收敛，风险回到阈值内。",
+        "observed_signal": "补救动作完成，阶段状态恢复。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "fix_plan",
+          "verification_result"
+        ]
+      },
+      {
+        "step_id": "TX-017",
+        "phase_id": "P04",
+        "subgoal_id": "SG-10",
+        "tool": "训练作业调度器",
+        "intent": "拆解里程碑（模型发布稳定性）",
+        "action": "调用训练作业调度器完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-018",
+        "phase_id": "P04",
+        "subgoal_id": "SG-19",
+        "tool": "GPU资源池",
+        "intent": "建立回滚方案（模型发布稳定性）",
+        "action": "调用GPU资源池完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-019",
+        "phase_id": "P04",
+        "subgoal_id": "SG-19",
+        "tool": "故障演练脚本",
+        "intent": "建立回滚方案（模型发布稳定性）",
+        "action": "调用故障演练脚本完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-020",
+        "phase_id": "P05",
+        "subgoal_id": "SG-01",
+        "tool": "模型注册中心",
+        "intent": "安排灰度验证（模型发布稳定性）",
+        "action": "调用模型注册中心完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-021",
+        "phase_id": "P05",
+        "subgoal_id": "SG-01",
+        "tool": "日志检索系统",
+        "intent": "安排灰度验证（模型发布稳定性）",
+        "action": "调用日志检索系统完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-022",
+        "phase_id": "P05",
+        "subgoal_id": "SG-03",
+        "tool": "容量预测面板",
+        "intent": "优化资源配置（模型发布稳定性）",
+        "action": "调用容量预测面板完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "结果部分达标，仍有关键约束未完全满足。",
+        "status": "partial",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-023",
+        "phase_id": "P05",
+        "subgoal_id": "SG-03",
+        "tool": "训练作业调度器",
+        "intent": "修复优化资源配置（模型发布稳定性）中的偏差",
+        "action": "通过训练作业调度器补充校验并闭环问题。",
+        "expected_signal": "偏差收敛，风险回到阈值内。",
+        "observed_signal": "补救动作完成，阶段状态恢复。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "fix_plan",
+          "verification_result"
+        ]
+      },
+      {
+        "step_id": "TX-024",
+        "phase_id": "P05",
+        "subgoal_id": "SG-03",
+        "tool": "特征存储",
+        "intent": "优化资源配置（模型发布稳定性）",
+        "action": "调用特征存储完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-025",
+        "phase_id": "P05",
+        "subgoal_id": "SG-04",
+        "tool": "容量预测面板",
+        "intent": "完成交付复盘（模型发布稳定性）",
+        "action": "调用容量预测面板完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-026",
+        "phase_id": "P05",
+        "subgoal_id": "SG-13",
+        "tool": "在线监控平台",
+        "intent": "识别关键风险（模型发布稳定性）",
+        "action": "调用在线监控平台完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-027",
+        "phase_id": "P05",
+        "subgoal_id": "SG-16",
+        "tool": "容量预测面板",
+        "intent": "建立回滚方案（模型发布稳定性）",
+        "action": "调用容量预测面板完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-028",
+        "phase_id": "P05",
+        "subgoal_id": "SG-16",
+        "tool": "模型注册中心",
+        "intent": "建立回滚方案（模型发布稳定性）",
+        "action": "调用模型注册中心完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-029",
+        "phase_id": "P06",
+        "subgoal_id": "SG-02",
+        "tool": "GPU资源池",
+        "intent": "安排灰度验证（模型发布稳定性）",
+        "action": "调用GPU资源池完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-030",
+        "phase_id": "P06",
+        "subgoal_id": "SG-02",
+        "tool": "日志检索系统",
+        "intent": "安排灰度验证（模型发布稳定性）",
+        "action": "调用日志检索系统完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-031",
+        "phase_id": "P06",
+        "subgoal_id": "SG-12",
+        "tool": "发布流水线",
+        "intent": "执行压力测试（模型发布稳定性）",
+        "action": "调用发布流水线完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-032",
+        "phase_id": "P06",
+        "subgoal_id": "SG-12",
+        "tool": "在线监控平台",
+        "intent": "执行压力测试（模型发布稳定性）",
+        "action": "调用在线监控平台完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-033",
+        "phase_id": "P06",
+        "subgoal_id": "SG-18",
+        "tool": "故障演练脚本",
+        "intent": "执行压力测试（模型发布稳定性）",
+        "action": "调用故障演练脚本完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-034",
+        "phase_id": "P06",
+        "subgoal_id": "SG-18",
+        "tool": "在线监控平台",
+        "intent": "执行压力测试（模型发布稳定性）",
+        "action": "调用在线监控平台完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-035",
+        "phase_id": "P07",
+        "subgoal_id": "SG-06",
+        "tool": "发布流水线",
+        "intent": "推进跨团队协作（模型发布稳定性）",
+        "action": "调用发布流水线完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-036",
+        "phase_id": "P07",
+        "subgoal_id": "SG-06",
+        "tool": "在线监控平台",
+        "intent": "推进跨团队协作（模型发布稳定性）",
+        "action": "调用在线监控平台完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-037",
+        "phase_id": "P07",
+        "subgoal_id": "SG-09",
+        "tool": "在线监控平台",
+        "intent": "统一数据口径（模型发布稳定性）",
+        "action": "调用在线监控平台完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-038",
+        "phase_id": "P07",
+        "subgoal_id": "SG-14",
+        "tool": "训练作业调度器",
+        "intent": "统一数据口径（模型发布稳定性）",
+        "action": "调用训练作业调度器完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "执行过程触发异常，已通过备选路径恢复。",
+        "status": "recovered",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      },
+      {
+        "step_id": "TX-039",
+        "phase_id": "P07",
+        "subgoal_id": "SG-14",
+        "tool": "日志检索系统",
+        "intent": "统一数据口径（模型发布稳定性）",
+        "action": "调用日志检索系统完成子任务推进，并同步记录关键指标。",
+        "expected_signal": "获得可验证的中间结果，并更新风险状态。",
+        "observed_signal": "关键指标达到阶段阈值，子目标进入可验收状态。",
+        "status": "success",
+        "evidence_fields": [
+          "owner",
+          "timestamp",
+          "input_snapshot",
+          "output_metric"
+        ]
+      }
+    ],
+    "correction_trace": [
+      {
+        "correction_id": "CR-001",
+        "trigger_event": "关键模型出现线上性能退化告警。",
+        "phase_id": "P03",
+        "impact_level": "medium",
+        "diagnosis": "定位偏差来源，区分容量瓶颈、依赖阻塞与约束冲突。",
+        "affected_step_ids": [
+          "TX-011",
+          "TX-012"
+        ],
+        "replan_actions": [
+          "冻结非关键任务并释放资源给关键路径。",
+          "更新里程碑顺序，优先保护硬约束与主目标。",
+          "增加监控频率并设置异常升级阈值。"
+        ],
+        "rollback_guard": "若纠偏后关键指标连续两个观测窗口未恢复，立即回退到前一稳定版本。",
+        "verification": "检查阶段达成率、预算消耗与风险敞口是否回归阈值内。",
+        "window_weeks": [
+          3,
+          3
+        ]
+      },
+      {
+        "correction_id": "CR-002",
+        "trigger_event": "某区域机房网络抖动导致延迟升高。",
+        "phase_id": "P02",
+        "impact_level": "high",
+        "diagnosis": "定位偏差来源，区分容量瓶颈、依赖阻塞与约束冲突。",
+        "affected_step_ids": [
+          "TX-004",
+          "TX-005",
+          "TX-006"
+        ],
+        "replan_actions": [
+          "冻结非关键任务并释放资源给关键路径。",
+          "更新里程碑顺序，优先保护硬约束与主目标。",
+          "增加监控频率并设置异常升级阈值。"
+        ],
+        "rollback_guard": "若纠偏后关键指标连续两个观测窗口未恢复，立即回退到前一稳定版本。",
+        "verification": "检查阶段达成率、预算消耗与风险敞口是否回归阈值内。",
+        "window_weeks": [
+          2,
+          2
+        ]
+      },
+      {
+        "correction_id": "CR-003",
+        "trigger_event": "第2周突发高并发流量，推理QPS翻倍。",
+        "phase_id": "P07",
+        "impact_level": "high",
+        "diagnosis": "定位偏差来源，区分容量瓶颈、依赖阻塞与约束冲突。",
+        "affected_step_ids": [
+          "TX-035",
+          "TX-036",
+          "TX-037"
+        ],
+        "replan_actions": [
+          "冻结非关键任务并释放资源给关键路径。",
+          "更新里程碑顺序，优先保护硬约束与主目标。",
+          "增加监控频率并设置异常升级阈值。"
+        ],
+        "rollback_guard": "若纠偏后关键指标连续两个观测窗口未恢复，立即回退到前一稳定版本。",
+        "verification": "检查阶段达成率、预算消耗与风险敞口是否回归阈值内。",
+        "window_weeks": [
+          7,
+          7
+        ]
+      },
+      {
+        "correction_id": "CR-004",
+        "trigger_event": "新业务线临时申请高优先级资源配额。",
+        "phase_id": "P04",
+        "impact_level": "low",
+        "diagnosis": "定位偏差来源，区分容量瓶颈、依赖阻塞与约束冲突。",
+        "affected_step_ids": [
+          "TX-013",
+          "TX-014",
+          "TX-015"
+        ],
+        "replan_actions": [
+          "冻结非关键任务并释放资源给关键路径。",
+          "更新里程碑顺序，优先保护硬约束与主目标。",
+          "增加监控频率并设置异常升级阈值。"
+        ],
+        "rollback_guard": "若纠偏后关键指标连续两个观测窗口未恢复，立即回退到前一稳定版本。",
+        "verification": "检查阶段达成率、预算消耗与风险敞口是否回归阈值内。",
+        "window_weeks": [
+          4,
+          4
+        ]
+      },
+      {
+        "correction_id": "CR-005",
+        "trigger_event": "核心依赖库发布安全补丁，需紧急评估。",
+        "phase_id": "P05",
+        "impact_level": "low",
+        "diagnosis": "定位偏差来源，区分容量瓶颈、依赖阻塞与约束冲突。",
+        "affected_step_ids": [
+          "TX-020",
+          "TX-021",
+          "TX-022"
+        ],
+        "replan_actions": [
+          "冻结非关键任务并释放资源给关键路径。",
+          "更新里程碑顺序，优先保护硬约束与主目标。",
+          "增加监控频率并设置异常升级阈值。"
+        ],
+        "rollback_guard": "若纠偏后关键指标连续两个观测窗口未恢复，立即回退到前一稳定版本。",
+        "verification": "检查阶段达成率、预算消耗与风险敞口是否回归阈值内。",
+        "window_weeks": [
+          5,
+          5
+        ]
+      }
+    ],
+    "turns": [
+      {
+        "turn_id": "T-001",
+        "role": "planner",
+        "type": "long_range_planning",
+        "content": "已形成7阶段长程计划，覆盖关键依赖、工具与里程碑。"
+      },
+      {
+        "turn_id": "T-002",
+        "role": "planner",
+        "type": "phase_brief",
+        "content": "P01目标=推进第1阶段里程碑，收敛关键不确定性并保障约束满足。，关键信号=跨团队依赖阻塞。",
+        "ref_phase_id": "P01"
+      },
+      {
+        "turn_id": "T-003",
+        "role": "planner",
+        "type": "phase_brief",
+        "content": "P02目标=推进第2阶段里程碑，收敛关键不确定性并保障约束满足。，关键信号=高优先级告警持续触发。",
+        "ref_phase_id": "P02"
+      },
+      {
+        "turn_id": "T-004",
+        "role": "planner",
+        "type": "phase_brief",
+        "content": "P03目标=推进第3阶段里程碑，收敛关键不确定性并保障约束满足。，关键信号=关键路径延迟累计。",
+        "ref_phase_id": "P03"
+      },
+      {
+        "turn_id": "T-005",
+        "role": "planner",
+        "type": "phase_brief",
+        "content": "P04目标=推进第4阶段里程碑，收敛关键不确定性并保障约束满足。，关键信号=预算消耗偏离阈值。",
+        "ref_phase_id": "P04"
+      },
+      {
+        "turn_id": "T-006",
+        "role": "planner",
+        "type": "phase_brief",
+        "content": "P05目标=推进第5阶段里程碑，收敛关键不确定性并保障约束满足。，关键信号=预算消耗偏离阈值。",
+        "ref_phase_id": "P05"
+      },
+      {
+        "turn_id": "T-007",
+        "role": "planner",
+        "type": "phase_brief",
+        "content": "P06目标=推进第6阶段里程碑，收敛关键不确定性并保障约束满足。，关键信号=模型或系统性能退化。",
+        "ref_phase_id": "P06"
+      },
+      {
+        "turn_id": "T-008",
+        "role": "executor",
+        "type": "tool_execution",
+        "content": "在P01执行GPU资源池，状态=partial。",
+        "tool": "GPU资源池",
+        "ref_step_id": "TX-001"
+      },
+      {
+        "turn_id": "T-009",
+        "role": "executor",
+        "type": "tool_execution",
+        "content": "在P01执行训练作业调度器，状态=success。",
+        "tool": "训练作业调度器",
+        "ref_step_id": "TX-002"
+      },
+      {
+        "turn_id": "T-010",
+        "role": "executor",
+        "type": "tool_execution",
+        "content": "在P01执行日志检索系统，状态=success。",
+        "tool": "日志检索系统",
+        "ref_step_id": "TX-003"
+      },
+      {
+        "turn_id": "T-011",
+        "role": "executor",
+        "type": "tool_execution",
+        "content": "在P02执行GPU资源池，状态=success。",
+        "tool": "GPU资源池",
+        "ref_step_id": "TX-004"
+      },
+      {
+        "turn_id": "T-012",
+        "role": "executor",
+        "type": "tool_execution",
+        "content": "在P02执行训练作业调度器，状态=success。",
+        "tool": "训练作业调度器",
+        "ref_step_id": "TX-005"
+      },
+      {
+        "turn_id": "T-013",
+        "role": "executor",
+        "type": "tool_execution",
+        "content": "在P02执行实验追踪系统，状态=success。",
+        "tool": "实验追踪系统",
+        "ref_step_id": "TX-006"
+      },
+      {
+        "turn_id": "T-014",
+        "role": "executor",
+        "type": "tool_execution",
+        "content": "在P02执行特征存储，状态=partial。",
+        "tool": "特征存储",
+        "ref_step_id": "TX-007"
+      },
+      {
+        "turn_id": "T-015",
+        "role": "executor",
+        "type": "tool_execution",
+        "content": "在P02执行训练作业调度器，状态=success。",
+        "tool": "训练作业调度器",
+        "ref_step_id": "TX-008"
+      },
+      {
+        "turn_id": "T-016",
+        "role": "executor",
+        "type": "tool_execution",
+        "content": "在P02执行发布流水线，状态=success。",
+        "tool": "发布流水线",
+        "ref_step_id": "TX-009"
+      },
+      {
+        "turn_id": "T-017",
+        "role": "executor",
+        "type": "tool_execution",
+        "content": "在P02执行在线监控平台，状态=success。",
+        "tool": "在线监控平台",
+        "ref_step_id": "TX-010"
+      },
+      {
+        "turn_id": "T-018",
+        "role": "executor",
+        "type": "tool_execution",
+        "content": "在P03执行在线监控平台，状态=success。",
+        "tool": "在线监控平台",
+        "ref_step_id": "TX-011"
+      },
+      {
+        "turn_id": "T-019",
+        "role": "executor",
+        "type": "tool_execution",
+        "content": "在P03执行故障演练脚本，状态=success。",
+        "tool": "故障演练脚本",
+        "ref_step_id": "TX-012"
+      },
+      {
+        "turn_id": "T-020",
+        "role": "critic",
+        "type": "trajectory_correction",
+        "content": "触发事件: 关键模型出现线上性能退化告警。，执行纠偏并重排优先级。",
+        "ref_correction_id": "CR-001"
+      },
+      {
+        "turn_id": "T-021",
+        "role": "planner",
+        "type": "replan_decision",
+        "content": "已根据纠偏结果更新阶段门禁与资源配比，继续推进主路径。",
+        "ref_correction_id": "CR-001"
+      },
+      {
+        "turn_id": "T-022",
+        "role": "critic",
+        "type": "trajectory_correction",
+        "content": "触发事件: 某区域机房网络抖动导致延迟升高。，执行纠偏并重排优先级。",
+        "ref_correction_id": "CR-002"
+      },
+      {
+        "turn_id": "T-023",
+        "role": "planner",
+        "type": "replan_decision",
+        "content": "已根据纠偏结果更新阶段门禁与资源配比，继续推进主路径。",
+        "ref_correction_id": "CR-002"
+      },
+      {
+        "turn_id": "T-024",
+        "role": "critic",
+        "type": "trajectory_correction",
+        "content": "触发事件: 第2周突发高并发流量，推理QPS翻倍。，执行纠偏并重排优先级。",
+        "ref_correction_id": "CR-003"
+      },
+      {
+        "turn_id": "T-025",
+        "role": "planner",
+        "type": "replan_decision",
+        "content": "已根据纠偏结果更新阶段门禁与资源配比，继续推进主路径。",
+        "ref_correction_id": "CR-003"
+      },
+      {
+        "turn_id": "T-026",
+        "role": "critic",
+        "type": "trajectory_correction",
+        "content": "触发事件: 新业务线临时申请高优先级资源配额。，执行纠偏并重排优先级。",
+        "ref_correction_id": "CR-004"
+      },
+      {
+        "turn_id": "T-027",
+        "role": "planner",
+        "type": "replan_decision",
+        "content": "已根据纠偏结果更新阶段门禁与资源配比，继续推进主路径。",
+        "ref_correction_id": "CR-004"
+      }
+    ]
+  },
+  "trajectory_metrics": {
+    "plan_phases": 7,
+    "tool_steps": 39,
+    "correction_steps": 5,
+    "turns": 27,
+    "tool_coverage": 1.0,
+    "phase_execution_coverage": 1.0,
+    "correction_action_coverage": 1.0,
+    "correction_link_coverage": 1.0
+  },
+  "trajectory_quality": {
+    "score": 1.0,
+    "components": {
+      "phase_depth": 1.0,
+      "execution_density": 1.0,
+      "correction_density": 1.0,
+      "tool_coverage": 1.0,
+      "phase_execution_coverage": 1.0,
+      "turn_richness": 1.0,
+      "correction_link_coverage": 1.0
+    }
+  },
+  "pipeline_version": "trajectory_pipeline_v2"
+}
