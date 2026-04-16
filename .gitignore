@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+
+.venv/
+venv/
+
+# Generated datasets and stage artifacts
+data/**/*.jsonl
+data/**/*.json
+data/stages_*/
