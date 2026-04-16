@@ -1,6 +1,7 @@
 import json
 import random
 import uuid
+from urllib import error, request
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
@@ -70,6 +71,184 @@ class QSynthesizer:
             "完成交付复盘"
         ]
         self.impact_pool = ["low", "medium", "high"]
+
+    @staticmethod
+    def _strip_code_fence(text: str) -> str:
+        t = text.strip()
+        if t.startswith("```") and t.endswith("```"):
+            lines = t.splitlines()
+            if len(lines) >= 2:
+                t = "\n".join(lines[1:-1]).strip()
+        return t
+
+    def _llm_messages(self, inst: TaskInstance, draft_q: str, mode: str) -> List[Dict[str, str]]:
+        subgoals = [
+            {
+                "id": sg.id,
+                "title": sg.title,
+                "dependencies": sg.dependencies,
+                "tools": sg.required_tools,
+            }
+            for sg in inst.subgoals[:12]
+        ]
+        events = [
+            {
+                "id": ev.id,
+                "trigger_phase": ev.trigger_phase,
+                "description": ev.description,
+                "impact": ev.impact_level,
+            }
+            for ev in inst.dynamic_events[:6]
+        ]
+
+        payload = {
+            "org": inst.org,
+            "domain": inst.domain,
+            "focus": inst.focus,
+            "goal": inst.goal,
+            "team_size": inst.team_size,
+            "timeline_weeks": inst.timeline_weeks,
+            "budget_k": inst.budget_k,
+            "available_tools": inst.available_tools,
+            "hard_constraints": inst.hard_constraints,
+            "soft_preferences": inst.soft_preferences,
+            "deliverables": inst.deliverables,
+            "noise_context": inst.noise_context,
+            "subgoals": subgoals,
+            "dynamic_events": events,
+        }
+
+        system_prompt = (
+            "你是高水平任务设计专家。请根据给定结构化上下文，产出一个高复杂度、长程、多约束、"
+            "可执行且更具语言多样性的中文任务问题Q。"
+            "必须覆盖：背景、核心目标、资源与环境、复杂子目标、硬约束、软偏好、动态事件、输出要求。"
+            "输出必须是JSON对象，且只有一个字段：Q。"
+        )
+
+        if mode == "hybrid":
+            user_prompt = (
+                "请基于下面上下文，重写并显著丰富已有草稿Q，保留事实约束但提升表述多样性与泛化性。"
+                "不要删掉关键约束与事件。\n\n"
+                f"结构化上下文:\n{json.dumps(payload, ensure_ascii=False)}\n\n"
+                f"草稿Q:\n{draft_q}\n\n"
+                "请仅输出JSON对象：{\"Q\":\"...\"}"
+            )
+        else:
+            user_prompt = (
+                "请根据下面结构化上下文直接生成全新Q（不要复述固定模板句式），"
+                "要求长程、复杂、具备真实业务感与多步骤依赖。\n\n"
+                f"结构化上下文:\n{json.dumps(payload, ensure_ascii=False)}\n\n"
+                "请仅输出JSON对象：{\"Q\":\"...\"}"
+            )
+
+        return [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+
+    def _call_openai_compatible(self, llm_cfg: Dict[str, Any], messages: List[Dict[str, str]]) -> str:
+        base_url = str(llm_cfg.get("base_url", "")).rstrip("/")
+        if not base_url:
+            raise ValueError("llm_cfg.base_url is required")
+
+        model = str(llm_cfg.get("model", "")).strip()
+        if not model:
+            raise ValueError("llm_cfg.model is required")
+
+        api_key = str(llm_cfg.get("api_key", "")).strip()
+        if not api_key:
+            raise ValueError("llm_cfg.api_key is required")
+
+        payload = {
+            "model": model,
+            "messages": messages,
+            "temperature": float(llm_cfg.get("temperature", 0.9)),
+            "top_p": float(llm_cfg.get("top_p", 0.95)),
+            "max_tokens": int(llm_cfg.get("max_tokens", 2200)),
+        }
+
+        req = request.Request(
+            url=f"{base_url}/chat/completions",
+            method="POST",
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {api_key}",
+            },
+            data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
+        )
+
+        timeout_sec = float(llm_cfg.get("timeout_sec", 60))
+        try:
+            with request.urlopen(req, timeout=timeout_sec) as resp:
+                body = resp.read().decode("utf-8")
+        except error.HTTPError as e:
+            detail = e.read().decode("utf-8", errors="ignore")
+            raise RuntimeError(f"LLM HTTPError {e.code}: {detail[:500]}") from e
+        except error.URLError as e:
+            raise RuntimeError(f"LLM URLError: {e}") from e
+
+        data = json.loads(body)
+        choices = data.get("choices", [])
+        if not choices:
+            raise RuntimeError(f"LLM response missing choices: {str(data)[:500]}")
+
+        msg = choices[0].get("message", {})
+        content = msg.get("content", "")
+        if isinstance(content, list):
+            # Some compatible APIs may return structured segments.
+            content = "".join(str(x.get("text", "")) for x in content if isinstance(x, dict))
+
+        content = str(content).strip()
+        if not content:
+            raise RuntimeError("LLM returned empty content")
+        return content
+
+    def _extract_q_from_llm_content(self, content: str) -> str:
+        raw = self._strip_code_fence(content)
+
+        try:
+            obj = json.loads(raw)
+            q_text = str(obj.get("Q", "")).strip()
+            if q_text:
+                return q_text
+        except Exception:
+            pass
+
+        # Try to find an embedded JSON object containing Q.
+        start = raw.find("{")
+        end = raw.rfind("}")
+        if start != -1 and end != -1 and end > start:
+            candidate = raw[start : end + 1]
+            try:
+                obj = json.loads(candidate)
+                q_text = str(obj.get("Q", "")).strip()
+                if q_text:
+                    return q_text
+            except Exception:
+                pass
+
+        # Last resort: accept plain text if reasonably long.
+        if len(raw) >= 120:
+            return raw
+
+        raise RuntimeError("Cannot parse usable Q from LLM content")
+
+    def _render_question_with_llm(self, inst: TaskInstance, draft_q: str, mode: str, llm_cfg: Dict[str, Any]) -> str:
+        max_retries = int(llm_cfg.get("max_retries", 2))
+        messages = self._llm_messages(inst, draft_q=draft_q, mode=mode)
+
+        last_err: Optional[Exception] = None
+        for _ in range(max_retries + 1):
+            try:
+                content = self._call_openai_compatible(llm_cfg, messages)
+                q_text = self._extract_q_from_llm_content(content)
+                if len(q_text) < 120:
+                    raise RuntimeError("LLM Q text too short")
+                return q_text
+            except Exception as e:  # noqa: PERF203
+                last_err = e
+
+        raise RuntimeError(f"LLM generation failed after retries: {last_err}")
 
     def _randint(self, left_right: List[int]) -> int:
         left, right = left_right
@@ -442,10 +621,36 @@ class QSynthesizer:
 
         return "\n".join(lines)
 
-    def generate_one(self, profile: str, q_only: bool = False) -> Dict[str, Any]:
+    def generate_one(
+        self,
+        profile: str,
+        q_only: bool = False,
+        q_generation_mode: str = "rule",
+        llm_cfg: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         inst = self._build_instance(profile)
         feasible, feasible_detail = self._is_feasible(inst)
-        q_text = self._render_question(inst)
+        mode = str(q_generation_mode or "rule").lower()
+        if mode not in {"rule", "llm", "hybrid"}:
+            raise ValueError(f"Unknown q_generation_mode: {mode}")
+
+        template_q = self._render_question(inst)
+        q_source = "rule-template"
+        if mode == "rule":
+            q_text = template_q
+        else:
+            if not llm_cfg:
+                raise ValueError("llm_cfg is required when q_generation_mode is llm or hybrid")
+            try:
+                q_text = self._render_question_with_llm(inst, draft_q=template_q, mode=mode, llm_cfg=llm_cfg)
+                q_source = "llm-generate" if mode == "llm" else "llm-hybrid"
+            except Exception as e:
+                if bool(llm_cfg.get("fallback_to_rule", False)):
+                    q_text = template_q
+                    q_source = "rule-fallback"
+                else:
+                    raise RuntimeError(f"LLM question generation failed: {e}") from e
+
         quality = self._quality_score(inst, feasible, feasible_detail)
 
         record: Dict[str, Any] = {
@@ -476,6 +681,8 @@ class QSynthesizer:
                 "constraint_count": len(inst.hard_constraints),
                 "event_count": len(inst.dynamic_events),
                 "tool_count": len(inst.available_tools),
+                "q_generation_mode": mode,
+                "q_source": q_source,
             },
             "task_graph": {
                 "nodes": [asdict(sg) for sg in inst.subgoals],
@@ -486,6 +693,9 @@ class QSynthesizer:
                 ],
             },
         }
+
+        if llm_cfg and mode in {"llm", "hybrid"}:
+            record["meta"]["llm_model"] = str(llm_cfg.get("model", ""))
 
         if not q_only:
             record["A"] = self._render_oracle_plan(inst)

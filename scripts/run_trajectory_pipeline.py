@@ -4,6 +4,7 @@ import copy
 import hashlib
 import json
 import math
+import os
 import random
 import re
 import sys
@@ -84,6 +85,18 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--max-retries-per-sample", type=int, default=60)
     p.add_argument("--max-generation-attempts", type=int, default=30000)
 
+    p.add_argument("--q-generation-mode", type=str, default="rule", choices=["rule", "llm", "hybrid"])
+    p.add_argument("--llm-base-url", type=str, default="", help="OpenAI-compatible base URL, e.g. https://api.openai.com/v1")
+    p.add_argument("--llm-model", type=str, default="", help="Model name for LLM Q generation")
+    p.add_argument("--llm-api-key", type=str, default="", help="API key (if empty, read from --llm-api-key-env)")
+    p.add_argument("--llm-api-key-env", type=str, default="OPENAI_API_KEY")
+    p.add_argument("--llm-timeout-sec", type=float, default=60.0)
+    p.add_argument("--llm-temperature", type=float, default=0.9)
+    p.add_argument("--llm-top-p", type=float, default=0.95)
+    p.add_argument("--llm-max-tokens", type=int, default=2200)
+    p.add_argument("--llm-max-retries", type=int, default=2)
+    p.add_argument("--llm-fallback-to-rule", action="store_true", help="Fallback to template Q when LLM call fails")
+
     p.add_argument("--min-industries", type=int, default=10)
     p.add_argument("--max-per-industry", type=int, default=0, help="0 means auto cap.")
     p.add_argument("--max-per-focus", type=int, default=0, help="0 means auto cap.")
@@ -119,6 +132,42 @@ def parse_split_ratios(raw: str) -> Tuple[float, float, float]:
         raise ValueError("--split-ratios sum must be positive")
 
     return vals[0] / total, vals[1] / total, vals[2] / total
+
+
+def build_llm_cfg(args: argparse.Namespace) -> Dict[str, Any]:
+    mode = str(args.q_generation_mode or "rule").lower()
+    if mode == "rule":
+        return {}
+
+    api_key = str(args.llm_api_key or "").strip()
+    if not api_key:
+        api_key = str(os.getenv(str(args.llm_api_key_env), "")).strip()
+
+    base_url = str(args.llm_base_url or "").strip()
+    model = str(args.llm_model or "").strip()
+
+    missing = []
+    if not base_url:
+        missing.append("--llm-base-url")
+    if not model:
+        missing.append("--llm-model")
+    if not api_key:
+        missing.append("--llm-api-key or env " + str(args.llm_api_key_env))
+
+    if missing:
+        raise ValueError("LLM mode requires: " + ", ".join(missing))
+
+    return {
+        "base_url": base_url.rstrip("/"),
+        "model": model,
+        "api_key": api_key,
+        "timeout_sec": float(args.llm_timeout_sec),
+        "temperature": float(args.llm_temperature),
+        "top_p": float(args.llm_top_p),
+        "max_tokens": int(args.llm_max_tokens),
+        "max_retries": int(args.llm_max_retries),
+        "fallback_to_rule": bool(args.llm_fallback_to_rule),
+    }
 
 
 def normalize_text(text: str) -> str:
@@ -780,6 +829,7 @@ def main() -> None:
     if args.q_only and args.require_A:
         raise ValueError("--q-only 与 --require-A 不能同时使用")
 
+    llm_cfg = build_llm_cfg(args)
     split_ratios = parse_split_ratios(args.split_ratios)
     rnd = random.Random(args.seed)
 
@@ -812,7 +862,12 @@ def main() -> None:
 
         accepted = None
         for _ in range(args.max_retries_per_sample):
-            rec = synth.generate_one(profile=profile, q_only=args.q_only)
+            rec = synth.generate_one(
+                profile=profile,
+                q_only=args.q_only,
+                q_generation_mode=args.q_generation_mode,
+                llm_cfg=llm_cfg,
+            )
             score = float(rec.get("quality", {}).get("score", 0.0))
             feas = rec.get("quality", {}).get("feasibility", {})
             if score >= quality_threshold and feas.get("feasible_hours") and feas.get("feasible_budget"):
@@ -948,6 +1003,18 @@ def main() -> None:
 
     summary = {
         "pipeline_version": PIPELINE_VERSION,
+        "q_generation": {
+            "mode": args.q_generation_mode,
+            "llm_base_url": llm_cfg.get("base_url", "") if llm_cfg else "",
+            "llm_model": llm_cfg.get("model", "") if llm_cfg else "",
+            "llm_timeout_sec": llm_cfg.get("timeout_sec", 0) if llm_cfg else 0,
+            "llm_temperature": llm_cfg.get("temperature", 0) if llm_cfg else 0,
+            "llm_top_p": llm_cfg.get("top_p", 0) if llm_cfg else 0,
+            "llm_max_tokens": llm_cfg.get("max_tokens", 0) if llm_cfg else 0,
+            "llm_max_retries": llm_cfg.get("max_retries", 0) if llm_cfg else 0,
+            "llm_fallback_to_rule": llm_cfg.get("fallback_to_rule", False) if llm_cfg else False,
+            "llm_api_key_env": args.llm_api_key_env,
+        },
         "config": args.config,
         "industry_catalog": args.industry_catalog,
         "domains_available": len(cfg.get("domains", [])),
@@ -977,6 +1044,7 @@ def main() -> None:
         "rejected_trajectory": rejected_trajectory,
         "filters": {
             "min_quality": args.min_quality,
+            "q_generation_mode": args.q_generation_mode,
             "min_plan_phases": args.min_plan_phases,
             "min_tool_steps": args.min_tool_steps,
             "min_corrections": args.min_corrections,

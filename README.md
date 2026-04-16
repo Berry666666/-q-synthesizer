@@ -16,6 +16,11 @@
 - `configs/industry_catalog.json`：行业扩展配置（用于提升行业覆盖）
 - `data/`：输出目录
 
+`run_trajectory_pipeline.py` 支持两类 Q 生成分支：
+
+- `rule`：规则与模板生成（默认）
+- `llm` / `hybrid`：调用外部 OpenAI 兼容 API 生成或重写 Q
+
 ## 2) 快速开始
 
 ### 2.1 生成 1,000 条 hard 档 QA
@@ -86,6 +91,34 @@ python3 scripts/run_trajectory_pipeline.py \
   --output data/trajectory_mixed_300.jsonl
 
 python3 scripts/inspect_q_dataset.py --input data/trajectory_mixed_300.jsonl
+
+### 2.8 使用外部大模型生成Q（提升泛化）
+
+```bash
+python3 scripts/run_trajectory_pipeline.py \
+  --q-generation-mode llm \
+  --llm-base-url https://api.openai.com/v1 \
+  --llm-model gpt-4o-mini \
+  --llm-api-key "$OPENAI_API_KEY" \
+  --llm-temperature 0.9 \
+  --llm-top-p 0.95 \
+  --llm-max-tokens 2200 \
+  --num-samples 200 \
+  --output data/trajectory_llm_200.jsonl
+```
+
+如果你希望“先按规则构图，再用 LLM 重写问题文本”，可使用：
+
+```bash
+python3 scripts/run_trajectory_pipeline.py \
+  --q-generation-mode hybrid \
+  --llm-base-url https://api.openai.com/v1 \
+  --llm-model gpt-4o-mini \
+  --llm-api-key "$OPENAI_API_KEY" \
+  --llm-fallback-to-rule \
+  --num-samples 200 \
+  --output data/trajectory_hybrid_200.jsonl
+```
 
 该命令会同时产出：
 

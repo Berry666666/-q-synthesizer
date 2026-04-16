@@ -37,6 +37,7 @@ v2 管线可以拆成 7 个阶段：
 
 ```bash
 python3 scripts/run_trajectory_pipeline.py \
+  --q-generation-mode rule \
   --profile mixed \
   --num-samples 300 \
   --candidate-multiplier 5 \
@@ -52,6 +53,12 @@ python3 scripts/run_trajectory_pipeline.py \
   --save-stage-artifacts \
   --output data/trajectory_mixed_300.jsonl
 ```
+
+`--q-generation-mode` 支持：
+
+- `rule`：纯规则模板生成 Q（默认）。
+- `llm`：调用外部 OpenAI 兼容 API 生成全新 Q。
+- `hybrid`：先规则生成草稿，再用 LLM 重写增强多样性。
 
 ## 4. 各阶段细节
 
@@ -85,6 +92,27 @@ python3 scripts/run_trajectory_pipeline.py \
 候选池规模由以下参数控制：
 
 - `num_samples * candidate_multiplier`
+
+Q 文本生成由 `--q-generation-mode` 控制：
+
+- `rule`：使用 `synthesizer.py` 内置模板渲染。
+- `llm`：将结构化上下文发送到外部 LLM，要求输出 JSON `{\"Q\":\"...\"}`。
+- `hybrid`：将规则草稿与结构化上下文一并发送给 LLM 重写。
+
+LLM 必需参数：
+
+- `--llm-base-url`
+- `--llm-model`
+- `--llm-api-key`（或环境变量 `--llm-api-key-env`，默认 `OPENAI_API_KEY`）
+
+可调参数：
+
+- `--llm-temperature`
+- `--llm-top-p`
+- `--llm-max-tokens`
+- `--llm-timeout-sec`
+- `--llm-max-retries`
+- `--llm-fallback-to-rule`（LLM失败时回退规则分支）
 
 基础门禁：
 
@@ -295,6 +323,26 @@ python3 scripts/run_trajectory_pipeline.py \
   --near-dup-threshold 0.84 \
   --min-industries 12 \
   --output data/trajectory_mixed_strict_3k.jsonl
+```
+
+### 6.4 LLM 增强版（提升Q泛化性）
+
+```bash
+python3 scripts/run_trajectory_pipeline.py \
+  --q-generation-mode hybrid \
+  --llm-base-url https://api.openai.com/v1 \
+  --llm-model gpt-4o-mini \
+  --llm-api-key "$OPENAI_API_KEY" \
+  --llm-temperature 0.9 \
+  --llm-top-p 0.95 \
+  --llm-max-tokens 2200 \
+  --llm-fallback-to-rule \
+  --profile mixed \
+  --num-samples 3000 \
+  --candidate-multiplier 6 \
+  --min-quality 0.80 \
+  --min-trajectory-score 0.74 \
+  --output data/trajectory_hybrid_3k.jsonl
 ```
 
 ### 6.3 仅生成 Q（无 A）
