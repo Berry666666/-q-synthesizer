@@ -79,6 +79,20 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--output", default=str(ROOT / "data" / "trajectory_dataset.jsonl"))
     p.add_argument("--summary-output", default="")
     p.add_argument("--seed", type=int, default=2026)
+    p.add_argument(
+        "--seed-mode",
+        type=str,
+        default="hash",
+        choices=["single", "cycle", "hash"],
+        help="single=固定单seed，cycle=在seed池循环，hash=按样本上下文派生seed。",
+    )
+    p.add_argument(
+        "--seed-pool",
+        type=str,
+        default="",
+        help="Comma-separated seeds, e.g. 42,2026,4096. Empty means only --seed.",
+    )
+    p.add_argument("--seed-step", type=int, default=1009, help="Step size for cycle/hash seed derivation")
     p.add_argument("--q-only", action="store_true")
     p.add_argument("--require-A", action="store_true", help="Only keep records with oracle A.")
     p.add_argument("--min-quality", type=float, default=None)
@@ -86,6 +100,13 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--max-generation-attempts", type=int, default=30000)
 
     p.add_argument("--q-generation-mode", type=str, default="rule", choices=["rule", "llm", "hybrid"])
+    p.add_argument(
+        "--subgoal-generation-mode",
+        type=str,
+        default="auto",
+        choices=["auto", "rule", "llm", "hybrid"],
+        help="auto=若提供LLM参数则优先llm；否则Q为rule时用rule，其它情况用hybrid。",
+    )
     p.add_argument("--llm-base-url", type=str, default="", help="OpenAI-compatible base URL, e.g. https://api.openai.com/v1")
     p.add_argument("--llm-model", type=str, default="", help="Model name for LLM Q generation")
     p.add_argument("--llm-api-key", type=str, default="", help="API key (if empty, read from --llm-api-key-env)")
@@ -96,6 +117,15 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--llm-max-tokens", type=int, default=2200)
     p.add_argument("--llm-max-retries", type=int, default=2)
     p.add_argument("--llm-fallback-to-rule", action="store_true", help="Fallback to template Q when LLM call fails")
+    p.add_argument("--subgoal-llm-temperature", type=float, default=None)
+    p.add_argument("--subgoal-llm-top-p", type=float, default=None)
+    p.add_argument("--subgoal-llm-max-tokens", type=int, default=None)
+    p.add_argument("--subgoal-llm-max-retries", type=int, default=None)
+    p.add_argument(
+        "--subgoal-llm-fallback-to-rule",
+        action="store_true",
+        help="Fallback to rule subgoal templates when subgoal LLM call fails.",
+    )
 
     p.add_argument("--min-industries", type=int, default=10)
     p.add_argument("--max-per-industry", type=int, default=0, help="0 means auto cap.")
@@ -134,9 +164,71 @@ def parse_split_ratios(raw: str) -> Tuple[float, float, float]:
     return vals[0] / total, vals[1] / total, vals[2] / total
 
 
-def build_llm_cfg(args: argparse.Namespace) -> Dict[str, Any]:
-    mode = str(args.q_generation_mode or "rule").lower()
-    if mode == "rule":
+def parse_seed_pool(base_seed: int, raw: str) -> List[int]:
+    text = str(raw or "").strip()
+    if not text:
+        return [int(base_seed)]
+
+    seeds: List[int] = []
+    for part in text.split(","):
+        token = part.strip()
+        if not token:
+            continue
+        try:
+            seeds.append(int(token))
+        except ValueError as e:
+            raise ValueError(f"Invalid seed in --seed-pool: {token}") from e
+
+    if not seeds:
+        raise ValueError("--seed-pool is empty after parsing")
+
+    unique: List[int] = []
+    seen = set()
+    for s in seeds:
+        if s not in seen:
+            seen.add(s)
+            unique.append(s)
+    return unique
+
+
+def derive_sample_seed(
+    seed_mode: str,
+    seed_pool: List[int],
+    attempt: int,
+    profile: str,
+    base_seed: int,
+    seed_step: int,
+) -> int:
+    mode = str(seed_mode or "single").lower()
+    base = int(seed_pool[(attempt - 1) % len(seed_pool)])
+
+    if mode == "single":
+        return base
+
+    if mode == "cycle":
+        return int(base + attempt * seed_step)
+
+    if mode == "hash":
+        token = f"{base}|{base_seed}|{attempt}|{profile}|{seed_step}"
+        val = int(hashlib.sha256(token.encode("utf-8")).hexdigest()[:16], 16) % 2147483647
+        return val if val != 0 else (abs(base) if base != 0 else 1)
+
+    raise ValueError(f"Unknown seed_mode: {mode}")
+
+
+def resolve_subgoal_mode(raw_mode: str, q_mode: str, llm_hint: bool) -> str:
+    mode = str(raw_mode or "auto").lower()
+    q_mode = str(q_mode or "rule").lower()
+    if mode == "auto":
+        if llm_hint:
+            return "llm" if q_mode == "rule" else "hybrid"
+        return "rule" if q_mode == "rule" else "hybrid"
+    return mode
+
+
+def build_llm_cfg(args: argparse.Namespace, q_mode: str, subgoal_mode: str) -> Dict[str, Any]:
+    need_llm = q_mode in {"llm", "hybrid"} or subgoal_mode in {"llm", "hybrid"}
+    if not need_llm:
         return {}
 
     api_key = str(args.llm_api_key or "").strip()
@@ -167,6 +259,19 @@ def build_llm_cfg(args: argparse.Namespace) -> Dict[str, Any]:
         "max_tokens": int(args.llm_max_tokens),
         "max_retries": int(args.llm_max_retries),
         "fallback_to_rule": bool(args.llm_fallback_to_rule),
+        "subgoal_temperature": float(args.subgoal_llm_temperature)
+        if args.subgoal_llm_temperature is not None
+        else float(args.llm_temperature),
+        "subgoal_top_p": float(args.subgoal_llm_top_p)
+        if args.subgoal_llm_top_p is not None
+        else float(args.llm_top_p),
+        "subgoal_max_tokens": int(args.subgoal_llm_max_tokens)
+        if args.subgoal_llm_max_tokens is not None
+        else int(args.llm_max_tokens),
+        "subgoal_max_retries": int(args.subgoal_llm_max_retries)
+        if args.subgoal_llm_max_retries is not None
+        else int(args.llm_max_retries),
+        "subgoal_fallback_to_rule": bool(args.subgoal_llm_fallback_to_rule or args.llm_fallback_to_rule),
     }
 
 
@@ -829,7 +934,11 @@ def main() -> None:
     if args.q_only and args.require_A:
         raise ValueError("--q-only 与 --require-A 不能同时使用")
 
-    llm_cfg = build_llm_cfg(args)
+    q_mode = str(args.q_generation_mode or "rule").lower()
+    llm_hint = bool(str(args.llm_base_url or "").strip() and str(args.llm_model or "").strip())
+    subgoal_mode = resolve_subgoal_mode(args.subgoal_generation_mode, q_mode, llm_hint=llm_hint)
+    llm_cfg = build_llm_cfg(args, q_mode=q_mode, subgoal_mode=subgoal_mode)
+    seed_pool = parse_seed_pool(args.seed, args.seed_pool)
     split_ratios = parse_split_ratios(args.split_ratios)
     rnd = random.Random(args.seed)
 
@@ -858,6 +967,14 @@ def main() -> None:
     while len(candidates) < target_candidates and attempts < args.max_generation_attempts:
         attempts += 1
         profile = pick_profile(args.profile, rnd)
+        sample_seed = derive_sample_seed(
+            seed_mode=args.seed_mode,
+            seed_pool=seed_pool,
+            attempt=attempts,
+            profile=profile,
+            base_seed=args.seed,
+            seed_step=args.seed_step,
+        )
         quality_threshold = synth.get_quality_threshold(profile, args.min_quality)
 
         accepted = None
@@ -865,8 +982,10 @@ def main() -> None:
             rec = synth.generate_one(
                 profile=profile,
                 q_only=args.q_only,
-                q_generation_mode=args.q_generation_mode,
+                q_generation_mode=q_mode,
+                subgoal_generation_mode=subgoal_mode,
                 llm_cfg=llm_cfg,
+                sample_seed=sample_seed,
             )
             score = float(rec.get("quality", {}).get("score", 0.0))
             feas = rec.get("quality", {}).get("feasibility", {})
@@ -1003,8 +1122,14 @@ def main() -> None:
 
     summary = {
         "pipeline_version": PIPELINE_VERSION,
+        "seed_strategy": {
+            "mode": args.seed_mode,
+            "base_seed": args.seed,
+            "seed_pool": seed_pool,
+            "seed_step": args.seed_step,
+        },
         "q_generation": {
-            "mode": args.q_generation_mode,
+            "mode": q_mode,
             "llm_base_url": llm_cfg.get("base_url", "") if llm_cfg else "",
             "llm_model": llm_cfg.get("model", "") if llm_cfg else "",
             "llm_timeout_sec": llm_cfg.get("timeout_sec", 0) if llm_cfg else 0,
@@ -1014,6 +1139,15 @@ def main() -> None:
             "llm_max_retries": llm_cfg.get("max_retries", 0) if llm_cfg else 0,
             "llm_fallback_to_rule": llm_cfg.get("fallback_to_rule", False) if llm_cfg else False,
             "llm_api_key_env": args.llm_api_key_env,
+        },
+        "subgoal_generation": {
+            "mode_arg": args.subgoal_generation_mode,
+            "mode_effective": subgoal_mode,
+            "llm_temperature": llm_cfg.get("subgoal_temperature", 0) if llm_cfg else 0,
+            "llm_top_p": llm_cfg.get("subgoal_top_p", 0) if llm_cfg else 0,
+            "llm_max_tokens": llm_cfg.get("subgoal_max_tokens", 0) if llm_cfg else 0,
+            "llm_max_retries": llm_cfg.get("subgoal_max_retries", 0) if llm_cfg else 0,
+            "llm_fallback_to_rule": llm_cfg.get("subgoal_fallback_to_rule", False) if llm_cfg else False,
         },
         "config": args.config,
         "industry_catalog": args.industry_catalog,
@@ -1044,7 +1178,10 @@ def main() -> None:
         "rejected_trajectory": rejected_trajectory,
         "filters": {
             "min_quality": args.min_quality,
-            "q_generation_mode": args.q_generation_mode,
+            "q_generation_mode": q_mode,
+            "subgoal_generation_mode": subgoal_mode,
+            "seed_mode": args.seed_mode,
+            "seed_step": args.seed_step,
             "min_plan_phases": args.min_plan_phases,
             "min_tool_steps": args.min_tool_steps,
             "min_corrections": args.min_corrections,

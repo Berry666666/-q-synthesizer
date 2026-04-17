@@ -2,7 +2,7 @@ import json
 import random
 import uuid
 from urllib import error, request
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -56,20 +56,9 @@ class QSynthesizer:
     def __init__(self, config: Dict[str, Any], seed: int = 42) -> None:
         self.config = config
         self.rnd = random.Random(seed)
-        self.action_pool = [
-            "梳理现状基线",
-            "统一数据口径",
-            "识别关键风险",
-            "制定执行策略",
-            "拆解里程碑",
-            "设计监控指标",
-            "推进跨团队协作",
-            "建立回滚方案",
-            "安排灰度验证",
-            "优化资源配置",
-            "执行压力测试",
-            "完成交付复盘"
-        ]
+        defaults = self.config.get("defaults", {}) if isinstance(self.config, dict) else {}
+        raw_pool = defaults.get("fallback_action_pool", []) if isinstance(defaults, dict) else []
+        self.action_pool = [str(x).strip() for x in raw_pool if str(x).strip()]
         self.impact_pool = ["low", "medium", "high"]
 
     @staticmethod
@@ -80,6 +69,29 @@ class QSynthesizer:
             if len(lines) >= 2:
                 t = "\n".join(lines[1:-1]).strip()
         return t
+
+    def _extract_json_obj_from_content(self, content: str) -> Dict[str, Any]:
+        raw = self._strip_code_fence(content)
+
+        try:
+            obj = json.loads(raw)
+            if isinstance(obj, dict):
+                return obj
+        except Exception:
+            pass
+
+        start = raw.find("{")
+        end = raw.rfind("}")
+        if start != -1 and end != -1 and end > start:
+            candidate = raw[start : end + 1]
+            try:
+                obj = json.loads(candidate)
+                if isinstance(obj, dict):
+                    return obj
+            except Exception:
+                pass
+
+        raise RuntimeError("Cannot parse JSON object from LLM content")
 
     def _llm_messages(self, inst: TaskInstance, draft_q: str, mode: str) -> List[Dict[str, str]]:
         subgoals = [
@@ -207,31 +219,169 @@ class QSynthesizer:
         raw = self._strip_code_fence(content)
 
         try:
-            obj = json.loads(raw)
+            obj = self._extract_json_obj_from_content(content)
             q_text = str(obj.get("Q", "")).strip()
             if q_text:
                 return q_text
         except Exception:
             pass
 
-        # Try to find an embedded JSON object containing Q.
-        start = raw.find("{")
-        end = raw.rfind("}")
-        if start != -1 and end != -1 and end > start:
-            candidate = raw[start : end + 1]
-            try:
-                obj = json.loads(candidate)
-                q_text = str(obj.get("Q", "")).strip()
-                if q_text:
-                    return q_text
-            except Exception:
-                pass
-
         # Last resort: accept plain text if reasonably long.
         if len(raw) >= 120:
             return raw
 
         raise RuntimeError("Cannot parse usable Q from LLM content")
+
+    @staticmethod
+    def _normalize_subgoal_text(text: Any, max_len: int) -> str:
+        val = " ".join(str(text).replace("\n", " ").split())
+        if len(val) > max_len:
+            val = val[:max_len].rstrip()
+        return val
+
+    def _subgoal_llm_messages(
+        self,
+        mode: str,
+        domain: str,
+        org: str,
+        focus: str,
+        goal: str,
+        available_tools: List[str],
+        subgoals: List[SubGoal],
+    ) -> List[Dict[str, str]]:
+        subgoal_payload = [
+            {
+                "id": sg.id,
+                "layer": sg.layer,
+                "dependencies": sg.dependencies,
+                "required_tools": sg.required_tools,
+                "draft_title": sg.title,
+                "draft_objective": sg.objective,
+            }
+            for sg in subgoals
+        ]
+
+        payload = {
+            "domain": domain,
+            "org": org,
+            "focus": focus,
+            "goal": goal,
+            "available_tools": available_tools,
+            "subgoals": subgoal_payload,
+        }
+
+        system_prompt = (
+            "你是资深任务分解专家。请输出JSON对象，且只包含一个字段subgoals。"
+            "subgoals必须是数组；每项必须包含id,title,objective。"
+            "禁止新增或删除id；禁止输出任何解释性文字和Markdown。"
+            "title应简洁具体，objective应可执行并可验收。"
+        )
+
+        if mode == "hybrid":
+            user_prompt = (
+                "请基于下面结构化上下文，重写每个子目标的title/objective，保留id、层级、依赖和工具约束。"
+                "强调行业语义、动作多样性与可执行性，不要使用同质化模板句式。\n\n"
+                f"结构化上下文:\n{json.dumps(payload, ensure_ascii=False)}\n\n"
+                "请仅输出JSON对象："
+                "{\"subgoals\":[{\"id\":\"SG-01\",\"title\":\"...\",\"objective\":\"...\"}]}"
+            )
+        else:
+            user_prompt = (
+                "请根据下面结构化上下文，直接为每个id生成新的title/objective。"
+                "必须覆盖全部id；不要复述固定动作词，不要输出模板化套话。\n\n"
+                f"结构化上下文:\n{json.dumps(payload, ensure_ascii=False)}\n\n"
+                "请仅输出JSON对象："
+                "{\"subgoals\":[{\"id\":\"SG-01\",\"title\":\"...\",\"objective\":\"...\"}]}"
+            )
+
+        return [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+
+    def _extract_subgoal_updates_from_llm_content(self, content: str, expected_ids: List[str]) -> Dict[str, Dict[str, str]]:
+        obj = self._extract_json_obj_from_content(content)
+        raw_items = obj.get("subgoals", [])
+        if not isinstance(raw_items, list):
+            raise RuntimeError("LLM subgoal payload missing 'subgoals' list")
+
+        expected = set(expected_ids)
+        updates: Dict[str, Dict[str, str]] = {}
+
+        for item in raw_items:
+            if not isinstance(item, dict):
+                continue
+
+            sid = str(item.get("id", "")).strip()
+            if sid not in expected or sid in updates:
+                continue
+
+            title = self._normalize_subgoal_text(item.get("title", ""), max_len=60)
+            objective = self._normalize_subgoal_text(item.get("objective", ""), max_len=180)
+            if title and objective:
+                updates[sid] = {"title": title, "objective": objective}
+
+        if not updates:
+            raise RuntimeError("LLM returned no usable subgoal updates")
+
+        return updates
+
+    def _render_subgoals_with_llm(
+        self,
+        subgoals: List[SubGoal],
+        domain: str,
+        org: str,
+        focus: str,
+        goal: str,
+        available_tools: List[str],
+        mode: str,
+        llm_cfg: Dict[str, Any],
+    ) -> List[SubGoal]:
+        messages = self._subgoal_llm_messages(
+            mode=mode,
+            domain=domain,
+            org=org,
+            focus=focus,
+            goal=goal,
+            available_tools=available_tools,
+            subgoals=subgoals,
+        )
+
+        call_cfg = dict(llm_cfg)
+        if "subgoal_temperature" in llm_cfg:
+            call_cfg["temperature"] = float(llm_cfg.get("subgoal_temperature"))
+        if "subgoal_top_p" in llm_cfg:
+            call_cfg["top_p"] = float(llm_cfg.get("subgoal_top_p"))
+        if "subgoal_max_tokens" in llm_cfg:
+            call_cfg["max_tokens"] = int(llm_cfg.get("subgoal_max_tokens"))
+
+        max_retries = int(llm_cfg.get("subgoal_max_retries", llm_cfg.get("max_retries", 2)))
+
+        last_err: Optional[Exception] = None
+        for _ in range(max_retries + 1):
+            try:
+                content = self._call_openai_compatible(call_cfg, messages)
+                updates = self._extract_subgoal_updates_from_llm_content(content, [sg.id for sg in subgoals])
+
+                rewritten: List[SubGoal] = []
+                for sg in subgoals:
+                    patch = updates.get(sg.id)
+                    if patch is None:
+                        rewritten.append(sg)
+                        continue
+                    rewritten.append(
+                        replace(
+                            sg,
+                            title=patch["title"],
+                            objective=patch["objective"],
+                        )
+                    )
+
+                return rewritten
+            except Exception as e:  # noqa: PERF203
+                last_err = e
+
+        raise RuntimeError(f"LLM subgoal generation failed after retries: {last_err}")
 
     def _render_question_with_llm(self, inst: TaskInstance, draft_q: str, mode: str, llm_cfg: Dict[str, Any]) -> str:
         max_retries = int(llm_cfg.get("max_retries", 2))
@@ -287,9 +437,17 @@ class QSynthesizer:
         self,
         profile_cfg: Dict[str, Any],
         domain_cfg: Dict[str, Any],
+        org: str,
         focus: str,
+        goal: str,
         available_tools: List[str],
-    ) -> List[SubGoal]:
+        llm_cfg: Optional[Dict[str, Any]] = None,
+        subgoal_generation_mode: str = "rule",
+    ) -> Tuple[List[SubGoal], str]:
+        mode = str(subgoal_generation_mode or "rule").lower()
+        if mode not in {"rule", "llm", "hybrid"}:
+            raise ValueError(f"Unknown subgoal_generation_mode: {mode}")
+
         n_subgoals = self._randint(profile_cfg["subgoals"])
         layers = self._build_layers(n_subgoals, profile_cfg["depth"])
 
@@ -299,11 +457,18 @@ class QSynthesizer:
         subgoals: List[SubGoal] = []
         by_layer: Dict[int, List[str]] = {}
 
+        # In llm/hybrid mode, draft text intentionally avoids fixed action templates
+        # to reduce lexical anchoring before model rewriting.
+        use_action_templates = mode == "rule" and bool(self.action_pool)
+
         for i in range(n_subgoals):
             sid = f"SG-{i + 1:02d}"
-            action = self.rnd.choice(self.action_pool)
-            title = f"{action}（{focus}）"
-            objective = f"在受限资源下完成“{focus}”相关关键动作，形成可验收结果。"
+            if use_action_templates:
+                action = self.rnd.choice(self.action_pool)
+                title = f"{action}（{focus}）"
+            else:
+                title = f"围绕{focus}推进关键子目标{i + 1}"
+            objective = f"在受限资源下完成与“{focus}”相关的第{i + 1}个关键动作，形成可验收结果。"
             layer = layers[i]
 
             prev_candidates: List[str] = []
@@ -335,7 +500,30 @@ class QSynthesizer:
             subgoals.append(node)
             by_layer.setdefault(layer, []).append(sid)
 
-        return subgoals
+        source = "rule-template"
+        if mode != "rule":
+            if not llm_cfg:
+                raise ValueError("llm_cfg is required when subgoal_generation_mode is llm or hybrid")
+            try:
+                subgoals = self._render_subgoals_with_llm(
+                    subgoals=subgoals,
+                    domain=str(domain_cfg.get("name", "unknown")),
+                    org=org,
+                    focus=focus,
+                    goal=goal,
+                    available_tools=available_tools,
+                    mode=mode,
+                    llm_cfg=llm_cfg,
+                )
+                source = "llm-generate" if mode == "llm" else "llm-hybrid"
+            except Exception as e:
+                fallback = bool(llm_cfg.get("subgoal_fallback_to_rule", llm_cfg.get("fallback_to_rule", False)))
+                if fallback:
+                    source = "rule-fallback"
+                else:
+                    raise RuntimeError(f"LLM subgoal generation failed: {e}") from e
+
+        return subgoals, source
 
     def _build_dynamic_events(self, profile_cfg: Dict[str, Any], domain_cfg: Dict[str, Any], n_phases: int) -> List[DynamicEvent]:
         event_count = self._randint(profile_cfg["events"])
@@ -357,7 +545,12 @@ class QSynthesizer:
             )
         return events
 
-    def _build_instance(self, profile: str) -> TaskInstance:
+    def _build_instance(
+        self,
+        profile: str,
+        llm_cfg: Optional[Dict[str, Any]] = None,
+        subgoal_generation_mode: str = "rule",
+    ) -> Tuple[TaskInstance, str]:
         domain_cfg = self._sample_domain()
         profile_cfg = self._sample_profile(profile)
 
@@ -374,7 +567,16 @@ class QSynthesizer:
         avail_tool_count = self.rnd.randint(6, min(10, len(domain_cfg["tool_pool"])))
         available_tools = self._choose_many(domain_cfg["tool_pool"], avail_tool_count)
 
-        subgoals = self._build_subgoals(profile_cfg, domain_cfg, focus, available_tools)
+        subgoals, subgoal_source = self._build_subgoals(
+            profile_cfg,
+            domain_cfg,
+            org,
+            focus,
+            goal,
+            available_tools,
+            llm_cfg=llm_cfg,
+            subgoal_generation_mode=subgoal_generation_mode,
+        )
         max_layer = max(sg.layer for sg in subgoals)
         dynamic_events = self._build_dynamic_events(profile_cfg, domain_cfg, max_layer + 1)
 
@@ -448,7 +650,7 @@ class QSynthesizer:
             deliverables=deliverables,
             noise_context=noise_context,
             available_tools=available_tools,
-        )
+        ), subgoal_source
 
     def _dependency_depth(self, subgoals: List[SubGoal]) -> int:
         node_map = {sg.id: sg for sg in subgoals}
@@ -626,13 +828,38 @@ class QSynthesizer:
         profile: str,
         q_only: bool = False,
         q_generation_mode: str = "rule",
+        subgoal_generation_mode: str = "rule",
         llm_cfg: Optional[Dict[str, Any]] = None,
+        sample_seed: Optional[int] = None,
     ) -> Dict[str, Any]:
-        inst = self._build_instance(profile)
-        feasible, feasible_detail = self._is_feasible(inst)
         mode = str(q_generation_mode or "rule").lower()
         if mode not in {"rule", "llm", "hybrid"}:
             raise ValueError(f"Unknown q_generation_mode: {mode}")
+
+        subgoal_mode = str(subgoal_generation_mode or "rule").lower()
+        if subgoal_mode not in {"rule", "llm", "hybrid"}:
+            raise ValueError(f"Unknown subgoal_generation_mode: {subgoal_mode}")
+
+        if sample_seed is None:
+            inst, subgoal_source = self._build_instance(
+                profile,
+                llm_cfg=llm_cfg,
+                subgoal_generation_mode=subgoal_mode,
+            )
+        else:
+            # Use an isolated RNG stream per sample to improve scenario diversity while keeping reproducibility.
+            prev_rnd = self.rnd
+            self.rnd = random.Random(int(sample_seed))
+            try:
+                inst, subgoal_source = self._build_instance(
+                    profile,
+                    llm_cfg=llm_cfg,
+                    subgoal_generation_mode=subgoal_mode,
+                )
+            finally:
+                self.rnd = prev_rnd
+
+        feasible, feasible_detail = self._is_feasible(inst)
 
         template_q = self._render_question(inst)
         q_source = "rule-template"
@@ -683,6 +910,8 @@ class QSynthesizer:
                 "tool_count": len(inst.available_tools),
                 "q_generation_mode": mode,
                 "q_source": q_source,
+                "subgoal_generation_mode": subgoal_mode,
+                "subgoal_source": subgoal_source,
             },
             "task_graph": {
                 "nodes": [asdict(sg) for sg in inst.subgoals],
@@ -694,8 +923,11 @@ class QSynthesizer:
             },
         }
 
-        if llm_cfg and mode in {"llm", "hybrid"}:
+        if llm_cfg and (mode in {"llm", "hybrid"} or subgoal_mode in {"llm", "hybrid"}):
             record["meta"]["llm_model"] = str(llm_cfg.get("model", ""))
+
+        if sample_seed is not None:
+            record["meta"]["sample_seed"] = int(sample_seed)
 
         if not q_only:
             record["A"] = self._render_oracle_plan(inst)

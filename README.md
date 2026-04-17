@@ -92,6 +92,25 @@ python3 scripts/run_trajectory_pipeline.py \
 
 python3 scripts/inspect_q_dataset.py --input data/trajectory_mixed_300.jsonl
 
+### 2.9 Seed 泛化策略（覆盖更多场景）
+
+```bash
+python3 scripts/run_trajectory_pipeline.py \
+  --seed 2026 \
+  --seed-mode hash \
+  --seed-pool 42,2026,4096,8192 \
+  --seed-step 1009 \
+  --profile mixed \
+  --num-samples 300 \
+  --output data/trajectory_seed_generalized_300.jsonl
+```
+
+seed 模式说明：
+
+- `single`：固定单seed（最稳定、最可复现）
+- `cycle`：在seed池循环并按步长偏移
+- `hash`：按样本上下文派生seed（推荐，覆盖更广且可复现）
+
 ### 2.8 使用外部大模型生成Q（提升泛化）
 
 ```bash
@@ -112,6 +131,7 @@ python3 scripts/run_trajectory_pipeline.py \
 ```bash
 python3 scripts/run_trajectory_pipeline.py \
   --q-generation-mode hybrid \
+  --subgoal-generation-mode hybrid \
   --llm-base-url https://api.openai.com/v1 \
   --llm-model gpt-4o-mini \
   --llm-api-key "$OPENAI_API_KEY" \
@@ -119,6 +139,27 @@ python3 scripts/run_trajectory_pipeline.py \
   --num-samples 200 \
   --output data/trajectory_hybrid_200.jsonl
 ```
+
+如果你只想让“子目标动作与目标表达”走外部大模型，而 Q 仍保持规则生成，可使用：
+
+```bash
+python3 scripts/run_trajectory_pipeline.py \
+  --q-generation-mode rule \
+  --subgoal-generation-mode llm \
+  --llm-base-url https://api.openai.com/v1 \
+  --llm-model gpt-4o-mini \
+  --llm-api-key "$OPENAI_API_KEY" \
+  --subgoal-llm-fallback-to-rule \
+  --num-samples 200 \
+  --output data/trajectory_subgoal_llm_200.jsonl
+```
+
+子目标模式说明：
+
+- `auto`：当提供 LLM 参数时优先走 `llm`；未提供时，`q=rule` 走 `rule`，其它走 `hybrid`。
+- `rule`：固定规则子目标（最稳定）。
+- `llm`：子目标完全由 LLM 生成表达。
+- `hybrid`：先规则骨架，再由 LLM 重写子目标表达（推荐）。
 
 该命令会同时产出：
 
