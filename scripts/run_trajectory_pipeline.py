@@ -107,6 +107,13 @@ def parse_args() -> argparse.Namespace:
         choices=["auto", "rule", "llm", "hybrid"],
         help="auto=若提供LLM参数则优先llm；否则Q为rule时用rule，其它情况用hybrid。",
     )
+    p.add_argument(
+        "--context-generation-mode",
+        type=str,
+        default="auto",
+        choices=["auto", "rule", "llm", "hybrid"],
+        help="auto=若提供LLM参数则优先llm；否则使用rule。",
+    )
     p.add_argument("--llm-base-url", type=str, default="", help="OpenAI-compatible base URL, e.g. https://api.openai.com/v1")
     p.add_argument("--llm-model", type=str, default="", help="Model name for LLM Q generation")
     p.add_argument("--llm-api-key", type=str, default="", help="API key (if empty, read from --llm-api-key-env)")
@@ -125,6 +132,15 @@ def parse_args() -> argparse.Namespace:
         "--subgoal-llm-fallback-to-rule",
         action="store_true",
         help="Fallback to rule subgoal templates when subgoal LLM call fails.",
+    )
+    p.add_argument("--context-llm-temperature", type=float, default=None)
+    p.add_argument("--context-llm-top-p", type=float, default=None)
+    p.add_argument("--context-llm-max-tokens", type=int, default=None)
+    p.add_argument("--context-llm-max-retries", type=int, default=None)
+    p.add_argument(
+        "--context-llm-fallback-to-rule",
+        action="store_true",
+        help="Fallback to rule context templates when context LLM call fails.",
     )
 
     p.add_argument("--min-industries", type=int, default=10)
@@ -226,8 +242,15 @@ def resolve_subgoal_mode(raw_mode: str, q_mode: str, llm_hint: bool) -> str:
     return mode
 
 
-def build_llm_cfg(args: argparse.Namespace, q_mode: str, subgoal_mode: str) -> Dict[str, Any]:
-    need_llm = q_mode in {"llm", "hybrid"} or subgoal_mode in {"llm", "hybrid"}
+def resolve_context_mode(raw_mode: str, llm_hint: bool) -> str:
+    mode = str(raw_mode or "auto").lower()
+    if mode == "auto":
+        return "llm" if llm_hint else "rule"
+    return mode
+
+
+def build_llm_cfg(args: argparse.Namespace, q_mode: str, subgoal_mode: str, context_mode: str) -> Dict[str, Any]:
+    need_llm = q_mode in {"llm", "hybrid"} or subgoal_mode in {"llm", "hybrid"} or context_mode in {"llm", "hybrid"}
     if not need_llm:
         return {}
 
@@ -272,6 +295,19 @@ def build_llm_cfg(args: argparse.Namespace, q_mode: str, subgoal_mode: str) -> D
         if args.subgoal_llm_max_retries is not None
         else int(args.llm_max_retries),
         "subgoal_fallback_to_rule": bool(args.subgoal_llm_fallback_to_rule or args.llm_fallback_to_rule),
+        "context_temperature": float(args.context_llm_temperature)
+        if args.context_llm_temperature is not None
+        else float(args.llm_temperature),
+        "context_top_p": float(args.context_llm_top_p)
+        if args.context_llm_top_p is not None
+        else float(args.llm_top_p),
+        "context_max_tokens": int(args.context_llm_max_tokens)
+        if args.context_llm_max_tokens is not None
+        else int(args.llm_max_tokens),
+        "context_max_retries": int(args.context_llm_max_retries)
+        if args.context_llm_max_retries is not None
+        else int(args.llm_max_retries),
+        "context_fallback_to_rule": bool(args.context_llm_fallback_to_rule or args.llm_fallback_to_rule),
     }
 
 
@@ -937,7 +973,8 @@ def main() -> None:
     q_mode = str(args.q_generation_mode or "rule").lower()
     llm_hint = bool(str(args.llm_base_url or "").strip() and str(args.llm_model or "").strip())
     subgoal_mode = resolve_subgoal_mode(args.subgoal_generation_mode, q_mode, llm_hint=llm_hint)
-    llm_cfg = build_llm_cfg(args, q_mode=q_mode, subgoal_mode=subgoal_mode)
+    context_mode = resolve_context_mode(args.context_generation_mode, llm_hint=llm_hint)
+    llm_cfg = build_llm_cfg(args, q_mode=q_mode, subgoal_mode=subgoal_mode, context_mode=context_mode)
     seed_pool = parse_seed_pool(args.seed, args.seed_pool)
     split_ratios = parse_split_ratios(args.split_ratios)
     rnd = random.Random(args.seed)
@@ -984,6 +1021,7 @@ def main() -> None:
                 q_only=args.q_only,
                 q_generation_mode=q_mode,
                 subgoal_generation_mode=subgoal_mode,
+                context_generation_mode=context_mode,
                 llm_cfg=llm_cfg,
                 sample_seed=sample_seed,
             )
@@ -1149,6 +1187,15 @@ def main() -> None:
             "llm_max_retries": llm_cfg.get("subgoal_max_retries", 0) if llm_cfg else 0,
             "llm_fallback_to_rule": llm_cfg.get("subgoal_fallback_to_rule", False) if llm_cfg else False,
         },
+        "context_generation": {
+            "mode_arg": args.context_generation_mode,
+            "mode_effective": context_mode,
+            "llm_temperature": llm_cfg.get("context_temperature", 0) if llm_cfg else 0,
+            "llm_top_p": llm_cfg.get("context_top_p", 0) if llm_cfg else 0,
+            "llm_max_tokens": llm_cfg.get("context_max_tokens", 0) if llm_cfg else 0,
+            "llm_max_retries": llm_cfg.get("context_max_retries", 0) if llm_cfg else 0,
+            "llm_fallback_to_rule": llm_cfg.get("context_fallback_to_rule", False) if llm_cfg else False,
+        },
         "config": args.config,
         "industry_catalog": args.industry_catalog,
         "domains_available": len(cfg.get("domains", [])),
@@ -1180,6 +1227,7 @@ def main() -> None:
             "min_quality": args.min_quality,
             "q_generation_mode": q_mode,
             "subgoal_generation_mode": subgoal_mode,
+            "context_generation_mode": context_mode,
             "seed_mode": args.seed_mode,
             "seed_step": args.seed_step,
             "min_plan_phases": args.min_plan_phases,

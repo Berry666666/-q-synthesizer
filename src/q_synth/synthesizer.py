@@ -400,6 +400,420 @@ class QSynthesizer:
 
         raise RuntimeError(f"LLM generation failed after retries: {last_err}")
 
+    @staticmethod
+    def _normalize_text_field(value: Any, default: str, max_len: int) -> str:
+        text = " ".join(str(value).replace("\n", " ").split())
+        if not text:
+            text = default
+        if len(text) > max_len:
+            text = text[:max_len].rstrip()
+        return text
+
+    def _normalize_text_list(
+        self,
+        items: Any,
+        default: List[str],
+        min_items: int,
+        max_items: int,
+        max_len: int,
+    ) -> List[str]:
+        out: List[str] = []
+        seen = set()
+
+        source = items if isinstance(items, list) else []
+        for item in source:
+            val = self._normalize_text_field(item, default="", max_len=max_len)
+            if val and val not in seen:
+                seen.add(val)
+                out.append(val)
+            if len(out) >= max_items:
+                break
+
+        if len(out) < min_items:
+            for item in default:
+                val = self._normalize_text_field(item, default="", max_len=max_len)
+                if val and val not in seen:
+                    seen.add(val)
+                    out.append(val)
+                if len(out) >= max_items:
+                    break
+
+        return out[:max_items]
+
+    @staticmethod
+    def _coerce_int(value: Any, default: int, low: int, high: int) -> int:
+        try:
+            v = int(value)
+        except Exception:
+            return default
+        return max(low, min(high, v))
+
+    def _build_hard_constraints(
+        self,
+        base_constraints: List[str],
+        target_hard_count: int,
+        budget_k: int,
+        timeline_weeks: int,
+        parallel_limit: int,
+    ) -> List[str]:
+        target = max(1, int(target_hard_count))
+        hard_constraints = self._normalize_text_list(
+            base_constraints,
+            default=[],
+            min_items=0,
+            max_items=max(target + 8, 16),
+            max_len=120,
+        )
+
+        extra_templates = [
+            f"至少{self.rnd.randint(2, 5)}个关键节点需要双人复核。",
+            f"跨团队阻塞问题必须在{self.rnd.randint(4, 24)}小时内升级处理。",
+            f"每周必须完成不少于{self.rnd.randint(2, 6)}次阶段性质量抽检。",
+            f"所有高风险任务必须预留至少{self.rnd.randint(10, 30)}%缓冲时间。",
+            f"关键路径任务不得连续延期超过{self.rnd.randint(1, 2)}次。",
+            f"每个阶段至少保留{self.rnd.randint(1, 3)}个可替代执行方案。",
+            f"对外依赖接口故障恢复时间不得超过{self.rnd.randint(30, 180)}分钟。",
+            f"关键里程碑评审必须覆盖不少于{self.rnd.randint(3, 6)}类风险维度。",
+            "资源调度冲突在同一工作日内必须闭环处理。",
+            f"高优先级告警确认时延不得超过{self.rnd.randint(10, 60)}分钟。",
+        ]
+
+        while len(hard_constraints) < target and extra_templates:
+            c = self.rnd.choice(extra_templates)
+            extra_templates.remove(c)
+            if c not in hard_constraints:
+                hard_constraints.append(c)
+
+        filler_idx = 1
+        while len(hard_constraints) < target:
+            hard_constraints.append(f"附加硬约束-{filler_idx}: 不得弱化主目标验收标准。")
+            filler_idx += 1
+
+        hard_constraints.extend(
+            [
+                f"总预算上限为{budget_k}k，超出必须给出明确削减路径。",
+                f"项目总工期不超过{timeline_weeks}周。",
+                f"每周最多并行{parallel_limit}个高风险任务。",
+                f"核心里程碑最迟在第{max(2, timeline_weeks - 2)}周完成。",
+            ]
+        )
+        return hard_constraints
+
+    def _build_rule_context(self, profile_cfg: Dict[str, Any], domain_cfg: Dict[str, Any]) -> Dict[str, Any]:
+        org = self.rnd.choice(domain_cfg["org_pool"])
+        focus = self.rnd.choice(domain_cfg["focus_pool"])
+        background = self.rnd.choice(domain_cfg["background_templates"]).format(org=org, focus=focus)
+        goal = self.rnd.choice(domain_cfg["goal_templates"])
+
+        team_size = self.rnd.randint(4, 12)
+        timeline_weeks = self.rnd.randint(4, 14)
+        budget_k = self.rnd.randint(120, 800)
+        parallel_limit = self.rnd.randint(profile_cfg["branch_factor"][0], profile_cfg["branch_factor"][1] + 2)
+
+        avail_tool_count = self.rnd.randint(6, min(10, len(domain_cfg["tool_pool"])))
+        available_tools = self._choose_many(domain_cfg["tool_pool"], avail_tool_count)
+
+        target_hard_count = self._randint(profile_cfg["constraints"])
+        base_hard_constraints = self._choose_many(
+            domain_cfg["hard_constraint_pool"],
+            min(len(domain_cfg["hard_constraint_pool"]), target_hard_count),
+        )
+        hard_constraints = self._build_hard_constraints(
+            base_constraints=base_hard_constraints,
+            target_hard_count=target_hard_count,
+            budget_k=budget_k,
+            timeline_weeks=timeline_weeks,
+            parallel_limit=parallel_limit,
+        )
+
+        soft_count = self.rnd.randint(2, min(4, len(domain_cfg["soft_preference_pool"])))
+        soft_preferences = self._choose_many(domain_cfg["soft_preference_pool"], soft_count)
+
+        deliver_count = self.rnd.randint(4, min(6, len(domain_cfg["deliverable_requirements"])))
+        deliverables = self._choose_many(domain_cfg["deliverable_requirements"], deliver_count)
+
+        noise_count = self._randint(self.config["defaults"]["noise_sentences"])
+        noise_context = self._choose_many(domain_cfg["noise_pool"], noise_count)
+
+        event_count = self._randint(profile_cfg["events"])
+        event_specs = [{"description": x} for x in self._choose_many(domain_cfg["dynamic_event_pool"], event_count)]
+
+        return {
+            "org": org,
+            "focus": focus,
+            "background": background,
+            "goal": goal,
+            "team_size": team_size,
+            "timeline_weeks": timeline_weeks,
+            "budget_k": budget_k,
+            "parallel_limit": parallel_limit,
+            "available_tools": available_tools,
+            "hard_constraints": hard_constraints,
+            "soft_preferences": soft_preferences,
+            "deliverables": deliverables,
+            "noise_context": noise_context,
+            "event_specs": event_specs,
+            "target_hard_count": target_hard_count,
+        }
+
+    def _context_llm_messages(
+        self,
+        mode: str,
+        profile: str,
+        profile_cfg: Dict[str, Any],
+        domain_cfg: Dict[str, Any],
+        draft_context: Dict[str, Any],
+    ) -> List[Dict[str, str]]:
+        payload = {
+            "domain": str(domain_cfg.get("name", "unknown")),
+            "profile": profile,
+            "range_hints": {
+                "team_size": [4, 12],
+                "timeline_weeks": [4, 14],
+                "budget_k": [120, 800],
+                "parallel_limit": [profile_cfg["branch_factor"][0], profile_cfg["branch_factor"][1] + 2],
+                "constraints": profile_cfg["constraints"],
+                "events": profile_cfg["events"],
+            },
+            "reference_pools": {
+                "org_pool": domain_cfg.get("org_pool", [])[:10],
+                "focus_pool": domain_cfg.get("focus_pool", [])[:10],
+                "tool_pool": domain_cfg.get("tool_pool", [])[:16],
+                "hard_constraint_pool": domain_cfg.get("hard_constraint_pool", [])[:20],
+                "soft_preference_pool": domain_cfg.get("soft_preference_pool", [])[:10],
+                "deliverable_requirements": domain_cfg.get("deliverable_requirements", [])[:10],
+                "dynamic_event_pool": domain_cfg.get("dynamic_event_pool", [])[:10],
+                "noise_pool": domain_cfg.get("noise_pool", [])[:10],
+            },
+        }
+
+        system_prompt = (
+            "你是复杂任务场景设计专家。请输出一个JSON对象，禁止输出解释性文字和Markdown。"
+            "必须包含字段：org,focus,background,goal,team_size,timeline_weeks,budget_k,parallel_limit,"
+            "available_tools,hard_constraints,soft_preferences,deliverables,noise_context,dynamic_events。"
+            "dynamic_events必须是数组，每项包含description，可选trigger_phase,impact_level,required_action。"
+            "impact_level只能是low/medium/high。"
+        )
+
+        if mode == "hybrid":
+            user_prompt = (
+                "请基于以下上下文草稿进行重写和增强，保留可执行性与约束强度，显著降低模板化痕迹。"
+                "输出字段必须完整。\n\n"
+                f"输入信息:\n{json.dumps(payload, ensure_ascii=False)}\n\n"
+                f"上下文草稿:\n{json.dumps(draft_context, ensure_ascii=False)}\n\n"
+                "请仅输出JSON对象。"
+            )
+        else:
+            user_prompt = (
+                "请根据以下输入直接生成一个全新的复杂任务上下文，不要复述固定模板句式。"
+                "输出字段必须完整。\n\n"
+                f"输入信息:\n{json.dumps(payload, ensure_ascii=False)}\n\n"
+                "请仅输出JSON对象。"
+            )
+
+        return [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+
+    def _extract_context_from_llm_content(
+        self,
+        content: str,
+        mode: str,
+        draft_context: Dict[str, Any],
+        domain_cfg: Dict[str, Any],
+        profile_cfg: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        obj = self._extract_json_obj_from_content(content)
+
+        if mode == "llm":
+            required = [
+                "org",
+                "focus",
+                "background",
+                "goal",
+                "team_size",
+                "timeline_weeks",
+                "budget_k",
+                "parallel_limit",
+                "available_tools",
+                "hard_constraints",
+                "soft_preferences",
+                "deliverables",
+                "noise_context",
+                "dynamic_events",
+            ]
+            missing = [k for k in required if k not in obj]
+            if missing:
+                raise RuntimeError(f"LLM context payload missing keys: {','.join(missing)}")
+
+        org = self._normalize_text_field(obj.get("org", draft_context["org"]), default=draft_context["org"], max_len=40)
+        focus = self._normalize_text_field(obj.get("focus", draft_context["focus"]), default=draft_context["focus"], max_len=80)
+        background = self._normalize_text_field(
+            obj.get("background", draft_context["background"]),
+            default=draft_context["background"],
+            max_len=320,
+        )
+        goal = self._normalize_text_field(obj.get("goal", draft_context["goal"]), default=draft_context["goal"], max_len=220)
+
+        team_size = self._coerce_int(obj.get("team_size", draft_context["team_size"]), draft_context["team_size"], 4, 12)
+        timeline_weeks = self._coerce_int(
+            obj.get("timeline_weeks", draft_context["timeline_weeks"]), draft_context["timeline_weeks"], 4, 14
+        )
+        budget_k = self._coerce_int(obj.get("budget_k", draft_context["budget_k"]), draft_context["budget_k"], 120, 800)
+
+        parallel_low = int(profile_cfg["branch_factor"][0])
+        parallel_high = int(profile_cfg["branch_factor"][1]) + 2
+        parallel_limit = self._coerce_int(
+            obj.get("parallel_limit", draft_context["parallel_limit"]),
+            draft_context["parallel_limit"],
+            parallel_low,
+            parallel_high,
+        )
+
+        tool_cap = max(4, min(12, len(domain_cfg.get("tool_pool", [])) + 2))
+        available_tools = self._normalize_text_list(
+            obj.get("available_tools"),
+            default=draft_context["available_tools"],
+            min_items=min(4, max(1, len(draft_context["available_tools"]))),
+            max_items=tool_cap,
+            max_len=32,
+        )
+
+        target_hard_count = int(draft_context.get("target_hard_count", self._randint(profile_cfg["constraints"])))
+        raw_hard_constraints = self._normalize_text_list(
+            obj.get("hard_constraints"),
+            default=draft_context["hard_constraints"],
+            min_items=1,
+            max_items=max(target_hard_count + 8, 16),
+            max_len=120,
+        )
+        hard_constraints = self._build_hard_constraints(
+            base_constraints=raw_hard_constraints,
+            target_hard_count=target_hard_count,
+            budget_k=budget_k,
+            timeline_weeks=timeline_weeks,
+            parallel_limit=parallel_limit,
+        )
+
+        soft_preferences = self._normalize_text_list(
+            obj.get("soft_preferences"),
+            default=draft_context["soft_preferences"],
+            min_items=2,
+            max_items=6,
+            max_len=120,
+        )
+        deliverables = self._normalize_text_list(
+            obj.get("deliverables"),
+            default=draft_context["deliverables"],
+            min_items=4,
+            max_items=8,
+            max_len=120,
+        )
+
+        noise_max = max(1, int(self.config["defaults"]["noise_sentences"][1]))
+        noise_context = self._normalize_text_list(
+            obj.get("noise_context"),
+            default=draft_context["noise_context"],
+            min_items=0,
+            max_items=noise_max,
+            max_len=120,
+        )
+
+        raw_events = obj.get("dynamic_events", [])
+        event_specs: List[Dict[str, Any]] = []
+        if isinstance(raw_events, list):
+            event_cap = max(1, int(profile_cfg["events"][1]))
+            for item in raw_events[:event_cap]:
+                if not isinstance(item, dict):
+                    continue
+                desc = self._normalize_text_field(item.get("description", ""), default="", max_len=140)
+                if not desc:
+                    continue
+                impact = str(item.get("impact_level", "")).lower().strip()
+                if impact not in {"low", "medium", "high"}:
+                    impact = self.rnd.choice(self.impact_pool)
+
+                trigger = None
+                try:
+                    trigger = int(item.get("trigger_phase")) if "trigger_phase" in item else None
+                except Exception:
+                    trigger = None
+
+                action = self._normalize_text_field(item.get("required_action", ""), default="", max_len=120)
+                spec: Dict[str, Any] = {"description": desc, "impact_level": impact}
+                if trigger is not None:
+                    spec["trigger_phase"] = trigger
+                if action:
+                    spec["required_action"] = action
+                event_specs.append(spec)
+
+        if mode == "llm" and not event_specs and draft_context.get("event_specs"):
+            raise RuntimeError("LLM context payload has no usable dynamic_events")
+        if not event_specs:
+            event_specs = list(draft_context.get("event_specs", []))
+
+        return {
+            "org": org,
+            "focus": focus,
+            "background": background,
+            "goal": goal,
+            "team_size": team_size,
+            "timeline_weeks": timeline_weeks,
+            "budget_k": budget_k,
+            "parallel_limit": parallel_limit,
+            "available_tools": available_tools,
+            "hard_constraints": hard_constraints,
+            "soft_preferences": soft_preferences,
+            "deliverables": deliverables,
+            "noise_context": noise_context,
+            "event_specs": event_specs,
+            "target_hard_count": target_hard_count,
+        }
+
+    def _render_context_with_llm(
+        self,
+        profile: str,
+        profile_cfg: Dict[str, Any],
+        domain_cfg: Dict[str, Any],
+        draft_context: Dict[str, Any],
+        mode: str,
+        llm_cfg: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        messages = self._context_llm_messages(
+            mode=mode,
+            profile=profile,
+            profile_cfg=profile_cfg,
+            domain_cfg=domain_cfg,
+            draft_context=draft_context,
+        )
+
+        call_cfg = dict(llm_cfg)
+        if "context_temperature" in llm_cfg:
+            call_cfg["temperature"] = float(llm_cfg.get("context_temperature"))
+        if "context_top_p" in llm_cfg:
+            call_cfg["top_p"] = float(llm_cfg.get("context_top_p"))
+        if "context_max_tokens" in llm_cfg:
+            call_cfg["max_tokens"] = int(llm_cfg.get("context_max_tokens"))
+
+        max_retries = int(llm_cfg.get("context_max_retries", llm_cfg.get("max_retries", 2)))
+
+        last_err: Optional[Exception] = None
+        for _ in range(max_retries + 1):
+            try:
+                content = self._call_openai_compatible(call_cfg, messages)
+                return self._extract_context_from_llm_content(
+                    content=content,
+                    mode=mode,
+                    draft_context=draft_context,
+                    domain_cfg=domain_cfg,
+                    profile_cfg=profile_cfg,
+                )
+            except Exception as e:  # noqa: PERF203
+                last_err = e
+
+        raise RuntimeError(f"LLM context generation failed after retries: {last_err}")
+
     def _randint(self, left_right: List[int]) -> int:
         left, right = left_right
         return self.rnd.randint(left, right)
@@ -525,15 +939,54 @@ class QSynthesizer:
 
         return subgoals, source
 
-    def _build_dynamic_events(self, profile_cfg: Dict[str, Any], domain_cfg: Dict[str, Any], n_phases: int) -> List[DynamicEvent]:
-        event_count = self._randint(profile_cfg["events"])
-        sampled = self._choose_many(domain_cfg["dynamic_event_pool"], event_count)
+    def _build_dynamic_events(
+        self,
+        profile_cfg: Dict[str, Any],
+        domain_cfg: Dict[str, Any],
+        n_phases: int,
+        event_specs: Optional[List[Dict[str, Any]]] = None,
+    ) -> List[DynamicEvent]:
         events: List[DynamicEvent] = []
 
-        for i, desc in enumerate(sampled):
-            trigger = self.rnd.randint(1, max(1, n_phases))
-            impact = self.rnd.choice(self.impact_pool)
-            action = "触发应急分支：重排优先级、收缩范围、并保留合规与回滚能力。"
+        candidates: List[Dict[str, Any]] = []
+        if isinstance(event_specs, list):
+            for item in event_specs:
+                if not isinstance(item, dict):
+                    continue
+                desc = self._normalize_text_field(item.get("description", ""), default="", max_len=140)
+                if not desc:
+                    continue
+                candidates.append(item)
+
+        if not candidates:
+            event_count = self._randint(profile_cfg["events"])
+            sampled = self._choose_many(domain_cfg["dynamic_event_pool"], event_count)
+            candidates = [{"description": x} for x in sampled]
+
+        for i, item in enumerate(candidates):
+            desc = self._normalize_text_field(item.get("description", ""), default="", max_len=140)
+            if not desc:
+                continue
+
+            trigger = None
+            try:
+                trigger = int(item.get("trigger_phase")) if "trigger_phase" in item else None
+            except Exception:
+                trigger = None
+            if trigger is None:
+                trigger = self.rnd.randint(1, max(1, n_phases))
+            trigger = max(1, min(max(1, n_phases), trigger))
+
+            impact = str(item.get("impact_level", "")).lower().strip()
+            if impact not in {"low", "medium", "high"}:
+                impact = self.rnd.choice(self.impact_pool)
+
+            action = self._normalize_text_field(
+                item.get("required_action", ""),
+                default="触发应急分支：重排优先级、收缩范围、并保留合规与回滚能力。",
+                max_len=120,
+            )
+
             events.append(
                 DynamicEvent(
                     id=f"EV-{i + 1:02d}",
@@ -543,6 +996,7 @@ class QSynthesizer:
                     required_action=action,
                 )
             )
+
         return events
 
     def _build_instance(
@@ -550,22 +1004,48 @@ class QSynthesizer:
         profile: str,
         llm_cfg: Optional[Dict[str, Any]] = None,
         subgoal_generation_mode: str = "rule",
-    ) -> Tuple[TaskInstance, str]:
+        context_generation_mode: str = "rule",
+    ) -> Tuple[TaskInstance, str, str]:
+        context_mode = str(context_generation_mode or "rule").lower()
+        if context_mode not in {"rule", "llm", "hybrid"}:
+            raise ValueError(f"Unknown context_generation_mode: {context_mode}")
+
         domain_cfg = self._sample_domain()
         profile_cfg = self._sample_profile(profile)
+        draft_context = self._build_rule_context(profile_cfg, domain_cfg)
 
-        org = self.rnd.choice(domain_cfg["org_pool"])
-        focus = self.rnd.choice(domain_cfg["focus_pool"])
-        background = self.rnd.choice(domain_cfg["background_templates"]).format(org=org, focus=focus)
-        goal = self.rnd.choice(domain_cfg["goal_templates"])
+        context_source = "rule-template"
+        context_data = draft_context
+        if context_mode != "rule":
+            if not llm_cfg:
+                raise ValueError("llm_cfg is required when context_generation_mode is llm or hybrid")
+            try:
+                context_data = self._render_context_with_llm(
+                    profile=profile,
+                    profile_cfg=profile_cfg,
+                    domain_cfg=domain_cfg,
+                    draft_context=draft_context,
+                    mode=context_mode,
+                    llm_cfg=llm_cfg,
+                )
+                context_source = "llm-generate" if context_mode == "llm" else "llm-hybrid"
+            except Exception as e:
+                fallback = bool(llm_cfg.get("context_fallback_to_rule", llm_cfg.get("fallback_to_rule", False)))
+                if fallback:
+                    context_source = "rule-fallback"
+                    context_data = draft_context
+                else:
+                    raise RuntimeError(f"LLM context generation failed: {e}") from e
 
-        team_size = self.rnd.randint(4, 12)
-        timeline_weeks = self.rnd.randint(4, 14)
-        budget_k = self.rnd.randint(120, 800)
-        parallel_limit = self.rnd.randint(profile_cfg["branch_factor"][0], profile_cfg["branch_factor"][1] + 2)
-
-        avail_tool_count = self.rnd.randint(6, min(10, len(domain_cfg["tool_pool"])))
-        available_tools = self._choose_many(domain_cfg["tool_pool"], avail_tool_count)
+        org = str(context_data["org"])
+        focus = str(context_data["focus"])
+        background = str(context_data["background"])
+        goal = str(context_data["goal"])
+        team_size = int(context_data["team_size"])
+        timeline_weeks = int(context_data["timeline_weeks"])
+        budget_k = int(context_data["budget_k"])
+        parallel_limit = int(context_data["parallel_limit"])
+        available_tools = list(context_data["available_tools"])
 
         subgoals, subgoal_source = self._build_subgoals(
             profile_cfg,
@@ -578,79 +1058,43 @@ class QSynthesizer:
             subgoal_generation_mode=subgoal_generation_mode,
         )
         max_layer = max(sg.layer for sg in subgoals)
-        dynamic_events = self._build_dynamic_events(profile_cfg, domain_cfg, max_layer + 1)
-
-        target_hard_count = self._randint(profile_cfg["constraints"])
-        hard_constraints = self._choose_many(
-            domain_cfg["hard_constraint_pool"],
-            min(len(domain_cfg["hard_constraint_pool"]), target_hard_count),
+        dynamic_events = self._build_dynamic_events(
+            profile_cfg,
+            domain_cfg,
+            max_layer + 1,
+            event_specs=context_data.get("event_specs"),
         )
 
-        extra_templates = [
-            f"至少{self.rnd.randint(2, 5)}个关键节点需要双人复核。",
-            f"跨团队阻塞问题必须在{self.rnd.randint(4, 24)}小时内升级处理。",
-            f"每周必须完成不少于{self.rnd.randint(2, 6)}次阶段性质量抽检。",
-            f"所有高风险任务必须预留至少{self.rnd.randint(10, 30)}%缓冲时间。",
-            f"关键路径任务不得连续延期超过{self.rnd.randint(1, 2)}次。",
-            f"每个阶段至少保留{self.rnd.randint(1, 3)}个可替代执行方案。",
-            f"对外依赖接口故障恢复时间不得超过{self.rnd.randint(30, 180)}分钟。",
-            f"关键里程碑评审必须覆盖不少于{self.rnd.randint(3, 6)}类风险维度。",
-            f"资源调度冲突在同一工作日内必须闭环处理。",
-            f"高优先级告警确认时延不得超过{self.rnd.randint(10, 60)}分钟。",
-        ]
-
-        while len(hard_constraints) < target_hard_count and extra_templates:
-            c = self.rnd.choice(extra_templates)
-            extra_templates.remove(c)
-            if c not in hard_constraints:
-                hard_constraints.append(c)
-
-        # If still below target due template depletion, add deterministic filler constraints.
-        filler_idx = 1
-        while len(hard_constraints) < target_hard_count:
-            hard_constraints.append(f"附加硬约束-{filler_idx}: 不得弱化主目标验收标准。")
-            filler_idx += 1
-
-        # Inject numeric constraints for solver validation.
-        hard_constraints.extend(
-            [
-                f"总预算上限为{budget_k}k，超出必须给出明确削减路径。",
-                f"项目总工期不超过{timeline_weeks}周。",
-                f"每周最多并行{parallel_limit}个高风险任务。",
-                f"核心里程碑最迟在第{max(2, timeline_weeks - 2)}周完成。",
-            ]
-        )
-
-        soft_count = self.rnd.randint(2, min(4, len(domain_cfg["soft_preference_pool"])))
-        soft_preferences = self._choose_many(domain_cfg["soft_preference_pool"], soft_count)
-
-        deliver_count = self.rnd.randint(4, min(6, len(domain_cfg["deliverable_requirements"])))
-        deliverables = self._choose_many(domain_cfg["deliverable_requirements"], deliver_count)
-
-        noise_count = self._randint(self.config["defaults"]["noise_sentences"])
-        noise_context = self._choose_many(domain_cfg["noise_pool"], noise_count)
+        hard_constraints = list(context_data["hard_constraints"])
+        soft_preferences = list(context_data["soft_preferences"])
+        deliverables = list(context_data["deliverables"])
+        noise_context = list(context_data["noise_context"])
 
         task_id = f"Q-{profile}-{uuid.uuid4().hex[:10]}"
-        return TaskInstance(
-            task_id=task_id,
-            profile=profile,
-            domain=domain_cfg["name"],
-            org=org,
-            focus=focus,
-            background=background,
-            goal=goal,
-            team_size=team_size,
-            timeline_weeks=timeline_weeks,
-            budget_k=budget_k,
-            parallel_limit=parallel_limit,
-            subgoals=subgoals,
-            hard_constraints=hard_constraints,
-            soft_preferences=soft_preferences,
-            dynamic_events=dynamic_events,
-            deliverables=deliverables,
-            noise_context=noise_context,
-            available_tools=available_tools,
-        ), subgoal_source
+        return (
+            TaskInstance(
+                task_id=task_id,
+                profile=profile,
+                domain=domain_cfg["name"],
+                org=org,
+                focus=focus,
+                background=background,
+                goal=goal,
+                team_size=team_size,
+                timeline_weeks=timeline_weeks,
+                budget_k=budget_k,
+                parallel_limit=parallel_limit,
+                subgoals=subgoals,
+                hard_constraints=hard_constraints,
+                soft_preferences=soft_preferences,
+                dynamic_events=dynamic_events,
+                deliverables=deliverables,
+                noise_context=noise_context,
+                available_tools=available_tools,
+            ),
+            subgoal_source,
+            context_source,
+        )
 
     def _dependency_depth(self, subgoals: List[SubGoal]) -> int:
         node_map = {sg.id: sg for sg in subgoals}
@@ -829,6 +1273,7 @@ class QSynthesizer:
         q_only: bool = False,
         q_generation_mode: str = "rule",
         subgoal_generation_mode: str = "rule",
+        context_generation_mode: str = "rule",
         llm_cfg: Optional[Dict[str, Any]] = None,
         sample_seed: Optional[int] = None,
     ) -> Dict[str, Any]:
@@ -840,21 +1285,27 @@ class QSynthesizer:
         if subgoal_mode not in {"rule", "llm", "hybrid"}:
             raise ValueError(f"Unknown subgoal_generation_mode: {subgoal_mode}")
 
+        context_mode = str(context_generation_mode or "rule").lower()
+        if context_mode not in {"rule", "llm", "hybrid"}:
+            raise ValueError(f"Unknown context_generation_mode: {context_mode}")
+
         if sample_seed is None:
-            inst, subgoal_source = self._build_instance(
+            inst, subgoal_source, context_source = self._build_instance(
                 profile,
                 llm_cfg=llm_cfg,
                 subgoal_generation_mode=subgoal_mode,
+                context_generation_mode=context_mode,
             )
         else:
             # Use an isolated RNG stream per sample to improve scenario diversity while keeping reproducibility.
             prev_rnd = self.rnd
             self.rnd = random.Random(int(sample_seed))
             try:
-                inst, subgoal_source = self._build_instance(
+                inst, subgoal_source, context_source = self._build_instance(
                     profile,
                     llm_cfg=llm_cfg,
                     subgoal_generation_mode=subgoal_mode,
+                    context_generation_mode=context_mode,
                 )
             finally:
                 self.rnd = prev_rnd
@@ -912,6 +1363,8 @@ class QSynthesizer:
                 "q_source": q_source,
                 "subgoal_generation_mode": subgoal_mode,
                 "subgoal_source": subgoal_source,
+                "context_generation_mode": context_mode,
+                "context_source": context_source,
             },
             "task_graph": {
                 "nodes": [asdict(sg) for sg in inst.subgoals],
@@ -923,7 +1376,7 @@ class QSynthesizer:
             },
         }
 
-        if llm_cfg and (mode in {"llm", "hybrid"} or subgoal_mode in {"llm", "hybrid"}):
+        if llm_cfg and (mode in {"llm", "hybrid"} or subgoal_mode in {"llm", "hybrid"} or context_mode in {"llm", "hybrid"}):
             record["meta"]["llm_model"] = str(llm_cfg.get("model", ""))
 
         if sample_seed is not None:

@@ -111,11 +111,13 @@ seed 模式说明：
 - `cycle`：在seed池循环并按步长偏移
 - `hash`：按样本上下文派生seed（推荐，覆盖更广且可复现）
 
-### 2.8 使用外部大模型生成Q（提升泛化）
+### 2.8 使用外部大模型生成Q（含Context与子目标）
 
 ```bash
 python3 scripts/run_trajectory_pipeline.py \
   --q-generation-mode llm \
+  --context-generation-mode llm \
+  --subgoal-generation-mode llm \
   --llm-base-url https://api.openai.com/v1 \
   --llm-model gpt-4o-mini \
   --llm-api-key "$OPENAI_API_KEY" \
@@ -125,6 +127,12 @@ python3 scripts/run_trajectory_pipeline.py \
   --num-samples 200 \
   --output data/trajectory_llm_200.jsonl
 ```
+
+默认不启用模板回退：
+
+- 不传 `--llm-fallback-to-rule` 时，Q生成失败会直接报错，不会退回模板。
+- 不传 `--subgoal-llm-fallback-to-rule` 时，子目标生成失败会直接报错。
+- 不传 `--context-llm-fallback-to-rule` 时，Context生成失败会直接报错。
 
 如果你希望“先按规则构图，再用 LLM 重写问题文本”，可使用：
 
